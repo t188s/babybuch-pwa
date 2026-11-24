@@ -7,7 +7,8 @@ Verbesserungen fließen nur in eine Richtung: von der Pi-Version in die Web-App.
 - **Alle Daten bleiben auf dem Handy** (IndexedDB) – kein Server, keine Anmeldung
 - Abgleich zwischen den Eltern über eine **Backup-Datei** (Teilen-Menü), mit Zusammenführen, Papierkorb (30 Tage) und Rückgängig
   - **feldweise**: ändert ein Elternteil die Dauer und der andere die Notiz, bleiben beide Änderungen erhalten; beim selben Feld gewinnt die neueste
-- Mehrere Kinder
+- Mehrere Kinder; Kind entfernen (30 Tage Papierkorb, zurückholbar)
+- **Beispielkind** zum Ausprobieren und Vorführen: „Beispielkind ansehen“ im Willkommensfenster bzw. „+ Beispielkind“ unter Kinder (≈ 6 Wochen, alle Bereiche, frei erfunden)
 
 ## Aufbau: Pi-Oberfläche 1:1 + „lokaler Pi“ (Hybrid, Stand 0.2.0)
 

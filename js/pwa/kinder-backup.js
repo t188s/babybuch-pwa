@@ -3,7 +3,7 @@
 
 import * as speicher from "../kern/speicher.js";
 import * as abgleich from "../kern/abgleich.js";
-import { alleKinder, aktivesKind, kindSpeichern, aktivSetzen, alterText } from "../kern/kinder.js";
+import { alleKinder, aktivesKind, kindSpeichern, aktivSetzen, alterText, kindEntfernen, entfernteKinder, kindZurueckholen } from "../kern/kinder.js";
 import { APP_VERSION } from "../kern/version.js";
 import { $, neu, knopf, fenster, knopfReihe, nachfragen, toast, fehler, zeile, abschnitt, listenZeile, datumDe } from "../ui/bausteine.js";
 
@@ -39,6 +39,13 @@ export function kindDialog(kind = null, { pflicht = false } = {}) {
       pflicht ? "Leg zuerst euer Kind an. Alles bleibt nur auf diesem Handy." : "",
       zeile("Name", name), zeile("Geburtsdatum", geburt), zeile("Geschlecht", wahl), zeile("Geburtsgewicht", gg),
       neu("p", "unter", "Geburtsdatum und Geschlecht braucht das Babybuch für die WHO-Kurven und die Vorsorge-Zeitfenster."), reihe);
+    if (kind) d.append(knopf("Kind entfernen", async () => {
+      const ja = await nachfragen(`„${kind.daten.name}“ mit allen Einträgen entfernen? Kind und Einträge liegen danach 30 Tage im Papierkorb und lassen sich zurückholen.`, "Entfernen");
+      if (!ja) return;
+      await kindEntfernen(kind.uid);
+      try { sessionStorage.setItem("pwaHinweis", `„${kind.daten.name}“ entfernt – zurückholen unter „Kinder, Backup & Abgleich“.`); } catch (_) { /* egal */ }
+      neuStarten();
+    }, "loeschen-knopf"));
     if (pflicht) d.append(links());
     if (pflicht) d.addEventListener("cancel", e => e.preventDefault());       // ohne Kind geht es nicht weiter
     else reihe.append(knopf("Abbrechen", () => d.close()));
@@ -60,9 +67,26 @@ export function kindDialog(kind = null, { pflicht = false } = {}) {
           const [erstes] = await alleKinder();
           if (erstes) { await aktivSetzen(erstes.uid); d.close(); ok(erstes); }
         }))));
+      d.append(abschnitt("Erst einmal ausprobieren?", neu("p", "unter", "Ein erfundenes Beispielkind (6 Wochen alt) mit Einträgen in allen Bereichen. Später einfach entfernen."),
+        knopfReihe(knopf("Beispielkind ansehen", async () => {
+          const b = await beispielAnlegen();
+          if (b) { d.close(); ok(b); }
+        }))));
     }
     d.addEventListener("close", () => ok(null));
   });
+}
+
+/** Beispielkind anlegen und anzeigen (mit kurzer Rückmeldung, dauert ein paar Sekunden). */
+async function beispielAnlegen() {
+  try {
+    toast("Beispielkind wird angelegt …");
+    const { beispielkindAnlegen } = await import("./beispiel.js");
+    const kind = await beispielkindAnlegen();
+    await aktivSetzen(kind.uid);
+    try { sessionStorage.setItem("pwaHinweis", "Beispielkind „Lea“ angelegt – entfernen unter Kinder, Backup & Abgleich › Ändern."); } catch (_) { /* egal */ }
+    return kind;
+  } catch (f) { fehler(f); return null; }
 }
 
 let sicherstellen = null;
@@ -99,7 +123,16 @@ async function abschnitte(neuZeichnen) {
     knoepfe.push(knopf("Ändern", async () => { if (await kindDialog(k)) neuStarten(); }));
     ul.append(listenZeile(k.daten.name, [alterText(k.daten.geburtsdatum), k.uid === aktiv?.uid ? "wird angezeigt" : ""].filter(Boolean).join(" · ") || " ", ...knoepfe));
   }
-  teile.push(abschnitt("Kinder", ul, knopfReihe(knopf("+ Kind hinzufügen", async () => { const k = await kindDialog(); if (k) neuStarten(); }))));
+  const entfernt = await entfernteKinder();
+  const weg = neu("ul", "sicherung-liste");
+  for (const k of entfernt)
+    weg.append(listenZeile(k.daten.name, `entfernt ${datumDe(k.geloescht)}`, knopf("Zurückholen", async () => {
+      await kindZurueckholen(k.uid); await aktivSetzen(k.uid); neuStarten();
+    })));
+  teile.push(abschnitt("Kinder", ul,
+    knopfReihe(knopf("+ Kind hinzufügen", async () => { const k = await kindDialog(); if (k) neuStarten(); }),
+               knopf("+ Beispielkind", async () => { if (await beispielAnlegen()) neuStarten(); })),
+    ...(entfernt.length ? [neu("p", "label", "Entfernt (30 Tage im Papierkorb)"), weg] : [])));
 
   // ── Backup & Abgleich ──
   const letztes = await speicher.metaLesen("letztesBackup");

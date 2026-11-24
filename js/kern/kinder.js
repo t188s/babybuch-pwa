@@ -40,3 +40,32 @@ export function alterText(geburtsdatum, heute = new Date()) {
   if (tage < 365) return `${Math.floor(tage / 7)} Wochen alt`;
   return `${Math.floor(tage / 30.44)} Monate alt`;
 }
+
+// ── Kind entfernen (Entscheidung 24.11.: für alle Kinder, mit Rückfrage) ──
+// Kind und alle seine Einträge bekommen denselben Löschzeitpunkt → 30 Tage im Papierkorb, gemeinsam zurückholbar.
+export async function kindEntfernen(uid) {
+  const jetzt = Date.now(), ich = await speicher.geraet();
+  const betroffen = (await speicher.alle()).filter(d => d.kind === uid && !d.geloescht);
+  await speicher.standSchreiben(betroffen.map(d => ({ ...d, geloescht: jetzt, geaendert: jetzt, geraet: ich })));
+  if ((await speicher.metaLesen("aktivesKind")) === uid) {
+    const [naechstes] = await alleKinder();
+    await speicher.metaSchreiben("aktivesKind", naechstes?.uid || null);
+  }
+  return betroffen.length;
+}
+
+/** Entfernte Kinder, die noch im Papierkorb liegen (neueste zuerst). */
+export async function entfernteKinder() {
+  const grenze = Date.now() - 30 * 864e5;
+  return (await speicher.alle()).filter(d => d.typ === "kind" && d.geloescht && d.geloescht > grenze).sort((a, b) => b.geloescht - a.geloescht);
+}
+
+/** Kind mit allen Einträgen zurückholen, die zusammen mit ihm entfernt wurden. */
+export async function kindZurueckholen(uid) {
+  const kind = await speicher.holen(uid);
+  if (!kind?.geloescht) return 0;
+  const jetzt = Date.now(), ich = await speicher.geraet();
+  const zurueck = (await speicher.alle()).filter(d => d.kind === uid && d.geloescht === kind.geloescht);
+  await speicher.standSchreiben(zurueck.map(d => ({ ...d, geloescht: null, geaendert: jetzt, geraet: ich })));
+  return zurueck.length;
+}
