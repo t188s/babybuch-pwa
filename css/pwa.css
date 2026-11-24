@@ -1,0 +1,20 @@
+/* Babybuch PWA · Ergänzungen zur Pi-Oberfläche (nur Web-App-eigene Teile) */
+
+/* Backup-Hinweis oben im Inhalt */
+.pwa-hinweis { display: flex; align-items: center; gap: 12px; margin: 0 0 12px; padding: 10px 12px 10px 16px;
+               background: var(--flaeche); border: 1px solid var(--gold); border-radius: 14px; font-size: .9rem; }
+.pwa-hinweis span { flex: 1; }
+.pwa-hinweis button { min-height: 38px; padding: 0 14px; border-radius: 10px; background: var(--knopf); color: var(--knopf-text);
+                      border-color: var(--knopf); font-weight: 600; }
+.pwa-hinweis[hidden] { display: none; }
+
+/* Kind-Umschalter in der Kopfzeile (nur bei mehreren Kindern) */
+.pwa-kind { max-width: 7.5rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Web-App-eigene Fenster */
+dialog .sicherung-liste li .info { min-width: 0; }
+
+/* Stillen muss ohne Scrollen passen (Grundsatz der Pi-Version) → Backup-Hinweis dort nicht zeigen */
+body:has(#bereich-eintragen:not([hidden])) .pwa-hinweis { display: none; }
+dialog .b-zeile select { font: inherit; padding: 6px 10px; border-radius: 10px; border: 1px solid var(--linie);
+                         background: var(--hintergrund); color: var(--text); }
