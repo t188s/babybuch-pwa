@@ -160,5 +160,16 @@ export async function dauerhaftAnfordern() {
 }
 
 // ── Änderungen melden (Oberfläche zeichnet neu) ──
+/** Alle Daten dieses Geräts endgültig löschen (Kinder, Einträge, Papierkorb, Meta). Nicht rückgängig zu machen. */
+export async function allesLoeschen() {
+  if (dbVersprechen) { try { (await dbVersprechen).close(); } catch (_) { /* war nicht offen */ } dbVersprechen = null; }
+  await new Promise((ok, fehler) => {
+    const r = indexedDB.deleteDatabase(DB_NAME);
+    r.onsuccess = () => ok();
+    r.onerror = () => fehler(r.error);
+    r.onblocked = () => fehler(new Error("Babybuch ist noch in einem anderen Fenster geöffnet – bitte dort schließen und nochmal versuchen."));
+  });
+}
+
 export function beobachten(f) { zuhoerer.add(f); return () => zuhoerer.delete(f); }
 function melden(ereignis) { for (const f of zuhoerer) { try { f(ereignis); } catch (e) { console.error(e); } } }

@@ -60,6 +60,15 @@ def uebernehmen(index, pi_version, web_version):
   </div>
   <div class="einstellung">
     <label for="nachtmodus">Gedimmt in der Nacht''')
+    # Einstellungen gelten in der Web-App pro Kind und Handy (nicht „für alle Geräte“ wie beim Pi-Server)
+    s = ersetzen(s, '<p class="unter">Gelten für alle Geräte der Familie.</p>',
+                 '<p class="unter">Gelten für das angezeigte Kind. Aufs Partnerhandy kommen sie mit dem Backup.</p>')
+    # Kinddaten nur an einer Stelle bearbeiten: im Abschnitt „Baby“ steht eine Zusammenfassung mit „Ändern“ (Kind-Dialog);
+    # die Pi-Felder bleiben unsichtbar im Dokument, damit der Pi-Code unverändert läuft.
+    s = ersetzen(s, '<h3>Baby</h3>\n    <div class="einstellung">\n      <label for="baby-name">',
+                 '<h3>Baby</h3>\n    <div id="pwa-baby"></div>\n    <div id="pi-baby-felder" hidden>\n    <div class="einstellung">\n      <label for="baby-name">')
+    s = ersetzen(s, '<p class="unter" id="baby-gg-vorschlag" style="margin:-4px 0 0;text-align:right" hidden></p>',
+                 '<p class="unter" id="baby-gg-vorschlag" style="margin:-4px 0 0;text-align:right" hidden></p>\n    </div>')
     # 3) Kopfzeile: Kind-Knopf „Name ▾“ – immer sichtbar (Entscheidung 24.11.), links neben dem Seitentitel.
     #    Auf schmalen Handys ersetzt er den Seitentitel (welcher Reiter offen ist, zeigt die Leiste unten) – so bleibt
     #    rechts Platz für Stoppuhr, „○ Vitamin D“ und „Bericht“ wie in der Pi-Version.
@@ -76,7 +85,7 @@ def uebernehmen(index, pi_version, web_version):
     s = ersetzen(s, '$("sicherung-oeffnen").onclick = sicherungenOeffnen;', "/* Web-App: Sicherungen → Backup (js/pwa/kinder-backup.js) */")
     # 7) Erinnerungen über die Home-Assistant-App gibt es nicht
     s = ersetzen(s, '<p class="unter">Für tägliche Gaben (z. B. Vitamin D): Mitteilung über die Home-Assistant-App an diese iPhones.</p>\n    <div id="ei-geraete"></div>',
-                 '<p class="unter">Für regelmäßige Gaben zeigt das Babybuch ab der Uhrzeit einen goldenen Hinweis oben. '
+                 '<p class="unter">Für regelmäßige Gaben zeigt das Babybuch ab der Uhrzeit oben einen Hinweis. '
                  'Beim Anlegen einer Gabe bietet es an, sie täglich in den Kalender des Handys einzutragen – dann erinnert das Handy.</p>\n    <div id="ei-geraete" hidden></div>')
     s = ersetzen(s, '<div class="g-block-dlg"><p class="label">Erinnerung</p>', '<div class="g-block-dlg" hidden><p class="label">Erinnerung</p>')
     s = ersetzen(s, '<div class="g-block-dlg"><p class="label">Im Widget / Kurzbefehl abhaken</p>',

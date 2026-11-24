@@ -92,6 +92,40 @@ async function beispielAnlegen() {
   } catch (f) { fehler(f); return null; }
 }
 
+// ════════ iPhone/iPad: erst auf den Home-Bildschirm ════════
+// Auf iOS haben der Safari-Tab und die App auf dem Home-Bildschirm getrennte Speicher. Wer im Tab einträgt und
+// danach installiert, findet in der App nichts wieder – und iOS kann Website-Daten nach längerer Pause löschen.
+export function iosImBrowser() {
+  const ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const installiert = navigator.standalone === true || matchMedia("(display-mode: standalone)").matches;
+  return ios && !installiert;
+}
+
+let installHinweisLaeuft = null;
+/** Einmal pro Sitzung im iOS-Browser: Anleitung zeigen. Wartet, bis „Nur ansehen“ gewählt wurde. */
+export function installHinweis({ immer = false } = {}) {
+  if (!iosImBrowser()) return Promise.resolve();
+  if (!immer) { try { if (sessionStorage.getItem("pwaNurAnsehen")) return Promise.resolve(); } catch (_) { /* egal */ } }
+  installHinweisLaeuft ??= new Promise(ok => {
+    const schritte = neu("ol", "pwa-schritte");
+    for (const t of ["Unten auf Teilen tippen (Viereck mit Pfeil nach oben, beim iPad oben rechts).",
+                     "„Zum Home-Bildschirm“ wählen – eventuell etwas nach unten scrollen.",
+                     "Rechts oben „Hinzufügen“ tippen und das Babybuch ab jetzt nur noch über das neue Symbol öffnen."])
+      schritte.append(neu("li", "", t));
+    const reihe = knopfReihe();
+    const d = fenster("Erst auf den Home-Bildschirm", "Auf dem iPhone speichert das Babybuch nur als App sicher.", schritte,
+      neu("p", "unter", "Was du hier im Browser einträgst, sieht die App auf dem Home-Bildschirm nicht – das iPhone hält beides getrennt und kann Browser-Daten nach längerer Pause löschen."),
+      reihe);
+    d.addEventListener("cancel", e => e.preventDefault());
+    reihe.append(knopf("Nur kurz ansehen", () => {
+      try { sessionStorage.setItem("pwaNurAnsehen", "1"); } catch (_) { /* egal */ }
+      d.close();
+    }));
+    d.addEventListener("close", () => { installHinweisLaeuft = null; ok(); });
+  });
+  return installHinweisLaeuft;
+}
+
 let sicherstellen = null;
 /** Ohne Kind kann die Oberfläche nichts anzeigen – beim ersten Start einmal fragen (auch wenn viele Anfragen gleichzeitig kommen). */
 export function kindSicherstellen() {
@@ -99,6 +133,7 @@ export function kindSicherstellen() {
     for (;;) {
       const k = await aktivesKind();
       if (k) return k;
+      await installHinweis();
       await kindDialog(null, { pflicht: true });
     }
   })().finally(() => { sicherstellen = null; });
@@ -168,7 +203,35 @@ async function abschnitte(neuZeichnen) {
     neu("p", "unter", `Babybuch Web-App ${APP_VERSION}. ` + (dauerhaft ? "Der Browser hält die Daten dauerhaft fest."
       : "Der Browser hat dauerhaftes Speichern nicht bestätigt – regelmäßige Backups sind deshalb besonders wichtig.")),
     neu("p", "unter", "Das Babybuch dokumentiert nur – es stellt keine Diagnose und ersetzt keine Hebamme und keinen Arzt."), links()));
+
+  // ── Zurücksetzen ──
+  teile.push(abschnitt("Handy zurücksetzen",
+    neu("p", "unter", "Zum Beispiel vor einem Handywechsel oder wenn ihr das Babybuch nicht mehr nutzt."),
+    knopf("Alle Daten auf diesem Handy löschen", () => allesLoeschenDialog().catch(fehler), "loeschen-knopf")));
   return teile;
+}
+
+/** Alles löschen: zuerst Backup anbieten, dann zweimal bestätigen. */
+async function allesLoeschenDialog() {
+  const kinder = await alleKinder();
+  const namen = kinder.map(k => k.daten.name).join(", ") || "keine Kinder";
+  const reihe = knopfReihe();
+  const d = fenster("Alle Daten löschen?", `Auf diesem Handy: ${namen}.`,
+    neu("p", "unter", "Gelöscht werden alle Kinder, Einträge, der Papierkorb und der Import-Verlauf. Das lässt sich nicht rückgängig machen. " +
+      "Schon geteilte Backup-Dateien und das Handy deines Partners bleiben unverändert."), reihe);
+  reihe.append(knopf("Abbrechen", () => d.close()));
+  if (kinder.length) reihe.append(knopf("Erst Backup sichern", () => { d.close(); backupTeilenDialog(); }, "haupt"));
+  d.append(knopf("Ohne weiteres Backup löschen", async () => {
+    if (!(await nachfragen("Wirklich alle Babybuch-Daten auf diesem Handy endgültig löschen?", "Endgültig löschen"))) return;
+    try {
+      await speicher.allesLoeschen();
+      const design = window.PWA_DESIGN?.lesen();
+      try { localStorage.clear(); sessionStorage.clear(); } catch (_) { /* egal */ }
+      if (design) window.PWA_DESIGN.setzen(design);          // Design ist keine persönliche Angabe – bleibt
+      try { sessionStorage.setItem("pwaHinweis", "Alle Daten auf diesem Handy wurden gelöscht."); } catch (_) { /* egal */ }
+      neuStarten();
+    } catch (f) { fehler(f); }
+  }, "loeschen-knopf"));
 }
 
 function links() {
@@ -283,6 +346,17 @@ export async function einbauen() {
     };
   }
   void kinder;
+  // Einstellungen › Baby: nur Zusammenfassung, bearbeitet wird im Kind-Dialog (eine Stelle für die Kinddaten)
+  const baby = $("pwa-baby");
+  if (baby && aktiv) {
+    const g = { w: "Mädchen", m: "Junge" }[aktiv.daten.geschlecht];
+    const teile = [g, aktiv.daten.geburtsdatum ? "geboren " + aktiv.daten.geburtsdatum.split("-").reverse().join(".") : "Geburtsdatum fehlt",
+                   aktiv.daten.geburtsgewicht ? `${aktiv.daten.geburtsgewicht} g` : ""].filter(Boolean);
+    const ul = neu("ul", "sicherung-liste");
+    ul.append(listenZeile(aktiv.daten.name, teile.join(" · "), knopf("Ändern", async () => { if (await kindDialog(aktiv)) neuStarten(); })));
+    baby.replaceChildren(ul);
+  }
+  installHinweis().catch(() => {});
   // Design-Umschalter in den Einstellungen
   const dz = $("pwa-design");
   if (dz && window.PWA_DESIGN) {
@@ -297,6 +371,12 @@ export async function einbauen() {
 async function hinweisZeichnen() {
   const f = await abgleich.backupFaellig(), ziel = $("pwa-hinweis");
   if (!ziel) return;
+  if (iosImBrowser()) {      // wichtiger als die Backup-Erinnerung
+    ziel.hidden = false;
+    ziel.replaceChildren(neu("span", "", "Im Browser geöffnet – Einträge hier sind getrennt von der App."),
+      knopf("So geht’s", () => installHinweis({ immer: true })));
+    return;
+  }
   ziel.hidden = !f;
   if (!f) return;
   ziel.replaceChildren(neu("span", "", f.seit === null ? "Noch kein Backup – jetzt sichern?" : `Letztes Backup vor ${f.seit} Tagen – jetzt sichern?`),

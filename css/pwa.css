@@ -52,3 +52,5 @@ html.nachtmodus[data-design="blau"] {
 .kopf .marke svg path { fill: var(--marke); }
 .kopf-hinweis:not(.termin) { border-color: var(--marke); color: var(--marke-hell); }
 .pwa-design .umschalter { min-width: 11rem; }
+.pwa-schritte { margin: 4px 0 8px; padding-left: 1.3em; line-height: 1.45; }
+.pwa-schritte li { margin: 6px 0; }

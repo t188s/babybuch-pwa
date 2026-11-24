@@ -160,3 +160,10 @@ test("feldZeiten: nur geänderte Felder bekommen den neuen Zeitpunkt", () => {
   assert.deepEqual(feldZeitenNachAenderung(vorher, { dauer: 20, notiz: "b" }, 300, "B"), { dauer: [50, "A"], notiz: [300, "B"] });
   assert.deepEqual(feldZeitenNachAenderung(null, { dauer: 20 }, 300, "B"), { dauer: [300, "B"] });
 });
+
+test("Backup-Datei aus neuerer Version wird klar abgelehnt", async () => {
+  const { backupPruefen, FORMAT, FORMAT_VERSION } = await import("../js/kern/backupdatei.js");
+  const r = backupPruefen(JSON.stringify({ format: FORMAT, version: FORMAT_VERSION + 1, datensaetze: [] }));
+  assert.equal(r.ok, false);
+  assert.match(r.fehler, /neueren Babybuch-Version/);
+});
