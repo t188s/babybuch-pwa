@@ -2,7 +2,7 @@
 // Die App läuft danach auch ohne Internet. Daten liegen NICHT hier, sondern in IndexedDB.
 // Neue Version ausliefern: CACHE-Namen erhöhen (gleich wie js/kern/version.js).
 
-const CACHE = "babybuch-0.4.0";
+const CACHE = "babybuch-0.4.1";
 const DATEIEN = [
   "./", "index.html", "manifest.webmanifest", "css/pwa.css", "css/seiten.css", "datenschutz.html", "hilfe.html",
   "js/lokal/weiche.js", "js/lokal/server.js", "js/lokal/hilfen.js", "js/lokal/tabellen.js",

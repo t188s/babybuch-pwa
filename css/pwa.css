@@ -8,8 +8,25 @@
                       border-color: var(--knopf); font-weight: 600; }
 .pwa-hinweis[hidden] { display: none; }
 
-/* Kind-Umschalter in der Kopfzeile (nur bei mehreren Kindern) */
-.pwa-kind { max-width: 7.5rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Kind-Knopf in der Kopfzeile: „Name ▾“, immer sichtbar, links neben dem Titel (Entscheidung 24.11.) */
+.pwa-kind { display: inline-flex; align-items: center; gap: 4px; flex: 0 1 auto; min-width: 0; max-width: 40vw; min-height: 34px;
+            padding: 0 10px 0 12px; border-radius: 99px; border: 1px solid var(--gold); background: transparent; color: var(--gold);
+            font-size: .85rem; white-space: nowrap; }
+.pwa-kind .name { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.pwa-kind .pfeil { flex: none; font-size: .7rem; opacity: .8; }
+.pwa-kind[hidden] { display: none; }
+/* Schmale Handys: Kind-Knopf statt Seitentitel (der offene Reiter steht unten in der Leiste) */
+@media (max-width: 519px) {
+  .marke:has(.pwa-kind:not([hidden])) #kopf-titel { display: none; }
+  .pwa-kind { max-width: 32vw; }
+}
+/* Der Kind-Name darf nie verschwinden: lieber „Bericht“ nur als Symbol, wenn es ganz eng wird */
+.pwa-kind { flex-shrink: 0; }
+@media (max-width: 389px) {
+  body[data-seite="auswertung"] .kopf-rechts:has(.kopf-hinweis:not([hidden])) .kopf-bericht { font-size: 0; gap: 0; padding: 0 9px; }
+  body[data-seite="auswertung"] .kopf-rechts:has(.kopf-hinweis:not([hidden])) .kopf-bericht svg { width: 16px; height: 16px; margin: 0; }
+}
+dialog .menue-knoepfe button.aktiv { border-color: var(--gold); color: var(--gold); }
 
 /* Web-App-eigene Fenster */
 dialog .sicherung-liste li .info { min-width: 0; }

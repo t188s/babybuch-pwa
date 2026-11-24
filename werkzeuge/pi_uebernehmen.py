@@ -50,10 +50,11 @@ def uebernehmen(index, pi_version, web_version):
     s = ersetzen(s, 'href="static/icon-180.png"', 'href="icons/icon-180.png"')
     s = ersetzen(s, 'href="static/icon-192.png"', 'href="icons/icon-192.png"')
     s = ersetzen(s, "</head>", '  <script src="js/lokal/weiche.js"></script>\n  <link rel="stylesheet" href="css/pwa.css">\n</head>')
-    # 3) Kopfzeile: Kind-Umschalter (nur bei mehreren Kindern sichtbar)
-    s = ersetzen(s, '<button type="button" class="kopf-bericht" id="kopf-bericht"',
-                 '<button type="button" class="kopf-hinweis pwa-kind" id="pwa-kind" hidden aria-label="Kind wechseln"></button>\n      '
-                 '<button type="button" class="kopf-bericht" id="kopf-bericht"')
+    # 3) Kopfzeile: Kind-Knopf „Name ▾“ – immer sichtbar (Entscheidung 24.11.), links neben dem Seitentitel.
+    #    Auf schmalen Handys ersetzt er den Seitentitel (welcher Reiter offen ist, zeigt die Leiste unten) – so bleibt
+    #    rechts Platz für Stoppuhr, „○ Vitamin D“ und „Bericht“ wie in der Pi-Version.
+    s = ersetzen(s, '<h1 id="kopf-titel">Stillen</h1>',
+                 '<h1 id="kopf-titel">Stillen</h1>\n      <button type="button" class="pwa-kind" id="pwa-kind" hidden aria-label="Kind wechseln"></button>')
     # 4) Backup-Hinweis oben im Inhalt
     s = ersetzen(s, '<div class="inhalt">', '<div class="inhalt">\n  <div class="pwa-hinweis" id="pwa-hinweis" hidden></div>')
     # 5) Widget-Seite gibt es nicht → Kinder & Backup

@@ -14,6 +14,9 @@ const TYP_NAMEN = { kind: "Kind", stillen: "Stillen", windeln: "Windel", gewicht
 const typName = t => TYP_NAMEN[t] || t;
 const ART_NAMEN = { neu: "neu", aktualisiert: "geändert", geloescht: "gelöscht", wiederhergestellt: "wiederhergestellt" };
 
+/** Kurzer Name für die Kopfzeile: „Lea (Beispiel)“ → „Lea“, „Anna Maria“ → „Anna Maria“ */
+const rufname = name => String(name).replace(/\s*\(.*\)\s*$/, "") || name;
+
 /** Nach Kind-Wechsel oder Import: Pi-Oberfläche frisch laden (sie hält viel im Zwischenspeicher). */
 export function neuStarten() { location.reload(); }
 
@@ -260,16 +263,26 @@ export async function einbauen() {
   // Hinweis nach Neustart (z. B. „12 Änderungen übernommen“)
   try { const h = sessionStorage.getItem("pwaHinweis"); if (h) { sessionStorage.removeItem("pwaHinweis"); setTimeout(() => toast(h), 600); } } catch (_) { /* egal */ }
   const kinder = await alleKinder(), aktiv = await aktivesKind();
+  // Kind-Knopf oben: immer sichtbar, zeigt das angezeigte Kind, antippen = Kind wechseln (Verwalten in den Einstellungen)
   const k = $("pwa-kind");
-  if (k && aktiv && kinder.length > 1) {
-    k.textContent = aktiv.daten.name; k.hidden = false;
+  if (k && aktiv) {
+    k.replaceChildren(neu("span", "name", rufname(aktiv.daten.name)), neu("span", "pfeil", "▾"));
+    k.title = aktiv.daten.name;
+    k.hidden = false;
     k.onclick = async () => {
       const liste = neu("div", "menue-knoepfe");
-      const d = fenster("Welches Kind?", "", liste, knopfReihe(knopf("Schließen", () => d.close())));
-      for (const kind of await alleKinder())
-        liste.append(knopf(kind.daten.name + (kind.uid === aktiv.uid ? " ✓" : ""), async () => { await aktivSetzen(kind.uid); neuStarten(); }));
+      const d = fenster("Welches Kind?", "", liste,
+        neu("p", "unter", "Kinder hinzufügen, ändern oder entfernen: Einstellungen › Kinder, Backup & Abgleich."),
+        knopfReihe(knopf("Schließen", () => d.close())));
+      for (const kind of await alleKinder()) {
+        const b = knopf("", async () => { if (kind.uid !== aktiv.uid) { await aktivSetzen(kind.uid); neuStarten(); } else d.close(); },
+                        kind.uid === aktiv.uid ? "aktiv" : "");
+        b.append(neu("span", "", kind.daten.name), neu("span", "pfeil", kind.uid === aktiv.uid ? "✓ angezeigt" : alterText(kind.daten.geburtsdatum)));
+        liste.append(b);
+      }
     };
   }
+  void kinder;
   for (const id of ["pwa-daten", "pwa-daten-2"]) if ($(id)) $(id).onclick = () => oeffnen().catch(fehler);
   hinweisZeichnen();
 }

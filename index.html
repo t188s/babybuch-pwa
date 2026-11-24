@@ -840,13 +840,13 @@
     <div class="marke">
       <svg viewBox="17 21 66 54" aria-hidden="true"><path d="M49 71 C41 65.5 30 64.5 20 66.5 L20 39 C30 37 41 38.5 49 44.5 Z" fill="#cfae6c"/><path d="M51 71 C59 65.5 70 64.5 80 66.5 L80 39 C70 37 59 38.5 51 44.5 Z" fill="#cfae6c"/><path d="M50 35 C50 35 43.5 30.6 43.5 26.4 A3.6 3.6 0 0 1 50 24.4 A3.6 3.6 0 0 1 56.5 26.4 C56.5 30.6 50 35 50 35 Z" fill="#cfae6c"/></svg>
       <h1 id="kopf-titel">Stillen</h1>
+      <button type="button" class="pwa-kind" id="pwa-kind" hidden aria-label="Kind wechseln"></button>
     </div>
     <div class="kopf-rechts">
       <button type="button" class="warte-knopf offline-knopf" id="offline-knopf" hidden title="Pi nicht erreichbar – Einträge werden im iPhone gemerkt">● Offline</button>
       <button type="button" class="warte-knopf" id="warte-knopf" hidden>1 wartet</button>
       <span class="datum" id="kopf-datum"></span>
       <button type="button" class="kopf-krank" id="kopf-krank" hidden aria-label="Fieber oder Symptom eintragen">+ Fieber</button>
-      <button type="button" class="kopf-hinweis pwa-kind" id="pwa-kind" hidden aria-label="Kind wechseln"></button>
       <button type="button" class="kopf-bericht" id="kopf-bericht" data-ico="bericht" aria-label="Bericht erstellen">Bericht</button>
       <button type="button" class="kopf-hinweis" id="kopf-gabe" hidden></button>
       <button type="button" class="kopf-hinweis termin" id="kopf-termin" hidden></button>
@@ -1232,7 +1232,7 @@
     </div>
 
     <div class="karte mehr">
-      <button type="button" id="einstellungen-knopf">Einstellungen &amp; Export <span class="pfeil">Version Web 0.4.0 · Pi 3.0.2 ›</span></button>
+      <button type="button" id="einstellungen-knopf">Einstellungen &amp; Export <span class="pfeil">Version Web 0.4.1 · Pi 3.0.2 ›</span></button>
       <button type="button" id="pwa-daten-2">Kinder, Backup &amp; Abgleich <span class="pfeil">›</span></button>
     </div>
     <button type="button" class="g-bericht-knopf" id="a-bericht" hidden>Bericht erstellen · Hebamme oder Kinderärztin <span>›</span></button>
@@ -1495,7 +1495,7 @@
   <div class="dialog-knoepfe" style="grid-template-columns:1fr;margin-top:18px">
     <button id="einstellungen-fertig" class="haupt">Fertig</button>
   </div>
-  <p class="unter" style="text-align:center;margin:12px 0 0">Babybuch · Version Web 0.4.0 · Pi 3.0.2</p>
+  <p class="unter" style="text-align:center;margin:12px 0 0">Babybuch · Version Web 0.4.1 · Pi 3.0.2</p>
 </dialog>
 
 <!-- "Beide": an welcher Seite zuletzt? -->
@@ -1927,7 +1927,7 @@
   // ════════════════════════════════════════════════════════
   const NUTZUNG = (() => {
     const ZUSTAND = ["aktiv", "fertig", "faellig", "an", "gefuellt", "laeuft", "heute", "ueber", "sichtbar", "zu"];
-    const VERSION = "web-0.4.0", SICHER = ["a", "t", "teil", "ansicht", "w", "sym", "seite", "art", "bereich", "h", "gesamt", "d"];
+    const VERSION = "web-0.4.1", SICHER = ["a", "t", "teil", "ansicht", "w", "sym", "seite", "art", "bereich", "h", "gesamt", "d"];
     const lies = (k, d) => { try { return localStorage.getItem(k) ?? d; } catch (_) { return d; } };
     const schreib = (k, v) => { try { localStorage.setItem(k, v); } catch (_) { /* egal */ } };
     let geraet = lies("nutzungGeraet", null);
