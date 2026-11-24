@@ -49,7 +49,17 @@ def uebernehmen(index, pi_version, web_version):
     # 2) Symbole und Weiche (vor dem Skript der Oberfläche)
     s = ersetzen(s, 'href="static/icon-180.png"', 'href="icons/icon-180.png"')
     s = ersetzen(s, 'href="static/icon-192.png"', 'href="icons/icon-192.png"')
-    s = ersetzen(s, "</head>", '  <script src="js/lokal/weiche.js"></script>\n  <link rel="stylesheet" href="css/pwa.css">\n</head>')
+    s = ersetzen(s, "</head>", '  <script src="js/pwa/design.js"></script>\n  <script src="js/lokal/weiche.js"></script>\n  <link rel="stylesheet" href="css/pwa.css">\n</head>')
+    # Design-Wahl (Web-Version): Schwarz-Dusty-Blue (Standard) oder Schwarz-Gold, vor dem Nachtmodus-Schalter
+    s = ersetzen(s, '''  <div class="einstellung">
+    <label for="nachtmodus">Gedimmt in der Nacht''', '''  <div class="einstellung pwa-design">
+    <label>Design<br><span class="zuletzt-hinweis">gilt nur für dieses Handy</span></label>
+    <div class="umschalter" id="pwa-design" role="group" aria-label="Design">
+      <button type="button" data-design="blau">Dusty Blue</button><button type="button" data-design="gold">Gold</button>
+    </div>
+  </div>
+  <div class="einstellung">
+    <label for="nachtmodus">Gedimmt in der Nacht''')
     # 3) Kopfzeile: Kind-Knopf „Name ▾“ – immer sichtbar (Entscheidung 24.11.), links neben dem Seitentitel.
     #    Auf schmalen Handys ersetzt er den Seitentitel (welcher Reiter offen ist, zeigt die Leiste unten) – so bleibt
     #    rechts Platz für Stoppuhr, „○ Vitamin D“ und „Bericht“ wie in der Pi-Version.

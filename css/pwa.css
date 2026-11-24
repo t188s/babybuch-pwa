@@ -35,3 +35,20 @@ dialog .sicherung-liste li .info { min-width: 0; }
 body:has(#bereich-eintragen:not([hidden])) .pwa-hinweis { display: none; }
 dialog .b-zeile select { font: inherit; padding: 6px 10px; border-radius: 10px; border: 1px solid var(--linie);
                          background: var(--hintergrund); color: var(--text); }
+
+/* ── Design: Schwarz-Gold (wie Pi) oder Schwarz-Dusty-Blue (Standard der Web-Version) ──
+   Nur Grundfarbe, Logo, Knöpfe, Kopfzeile. Seitenfarben (Windeln, Wachstum …) und Datenfarben in
+   Diagrammen (links/rechts/beide, Windel nass/voll, Stillen) bleiben, damit alles unterscheidbar bleibt. */
+:root { --marke: #cfae6c; --marke-hell: #e3c98e; }
+html.nachtmodus { --marke: #8a7349; --marke-hell: #a1967f; }
+html[data-design="blau"] {
+  --gold: #8fa4c8; --gold-zart: #12161d; --knopf: #8fa4c8; --marke: #8fa4c8; --marke-hell: #b9c8e0;
+  --text: #eceef2; --text-leise: #8f96a3; --linie: #23272e; --flaeche: #101114; --flaeche-hoch: #171a1f;
+}
+html.nachtmodus[data-design="blau"] {
+  --gold: #5e6c86; --knopf: #56637b; --marke: #5e6c86; --marke-hell: #7d8aa1;
+  --text: #9aa1ad; --text-leise: #636975; --linie: #1a1d22; --flaeche: #0b0c0e; --flaeche-hoch: #121418;
+}
+.kopf .marke svg path { fill: var(--marke); }
+.kopf-hinweis:not(.termin) { border-color: var(--marke); color: var(--marke-hell); }
+.pwa-design .umschalter { min-width: 11rem; }

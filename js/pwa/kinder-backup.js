@@ -283,6 +283,13 @@ export async function einbauen() {
     };
   }
   void kinder;
+  // Design-Umschalter in den Einstellungen
+  const dz = $("pwa-design");
+  if (dz && window.PWA_DESIGN) {
+    const markieren = () => dz.querySelectorAll("button").forEach(b => b.classList.toggle("aktiv", b.dataset.design === window.PWA_DESIGN.lesen()));
+    dz.querySelectorAll("button").forEach(b => b.onclick = () => { window.PWA_DESIGN.setzen(b.dataset.design); markieren(); });
+    markieren();
+  }
   for (const id of ["pwa-daten", "pwa-daten-2"]) if ($(id)) $(id).onclick = () => oeffnen().catch(fehler);
   hinweisZeichnen();
 }
