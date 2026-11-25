@@ -219,6 +219,21 @@ async function abschnitte(neuZeichnen) {
     csv([["flasche", "Fläschchen"], ["abpumpen", "Abpumpen"], ["beikost", "Beikost"]], 3),
     csv([["fieber", "Temperatur"], ["symptome", "Symptome"], ["medikamente", "Medikamente"], ["gaben", "Tägliche Gaben"], ["uheft", "U-Heft"], ["impfungen", "Impfungen"]], 2)));
 
+  // ── Erstellte Berichte (die letzten 50, nur auf diesem Handy, nicht im Backup) ──
+  const berichte = (await speicher.metaLesen("berichte", [])) || [];
+  if (berichte.length) {
+    const ul = neu("ul", "sicherung-liste");
+    for (const b of berichte.slice(0, 20)) {
+      ul.append(listenZeile(`${b.name ? b.name + " · " : ""}${b.titel}`, `erstellt ${datumDe(b.erstellt)}${b.fuer === "kinderaerztin" ? " · Kinderärztin" : b.fuer === "hebamme" ? " · Hebamme" : ""}`,
+        knopf("Öffnen", () => { location.href = "bericht.html?ablage=" + encodeURIComponent(b.id); }),
+        knopf("Löschen", async () => {
+          const rest = ((await speicher.metaLesen("berichte", [])) || []).filter(x => x.id !== b.id);
+          await speicher.metaSchreiben("berichte", rest); neuZeichnen();
+        }, "loeschen-knopf")));
+    }
+    teile.push(abschnitt("Erstellte Berichte", neu("p", "unter", "Jeder geöffnete Bericht wird hier abgelegt (die letzten 50, nur auf diesem Handy). Öffnen → Teilen oder Drucken / als PDF."), ul));
+  }
+
   // ── Papierkorb ──
   if (aktiv) {
     const korb = await speicher.papierkorb(aktiv.uid);

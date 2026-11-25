@@ -41,6 +41,7 @@
     if (/(^|\/)export\//.test(href))           // CSV-Tabellen: lokal erzeugen, teilen bzw. herunterladen
       return import("../pwa/teilen.js").then(m => m.exportLink(href))
         .catch(f => window.zeigeToast?.(f.message || String(f)));
+    if (/^bericht\?/.test(href)) { location.href = "bericht.html" + href.slice(href.indexOf("?")); return; }   // Bericht im selben Fenster
     window.PWA_BALD();
   }, true);
 

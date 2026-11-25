@@ -181,7 +181,7 @@ async def main():
     try:
         async with async_playwright() as pw:
             b = await pw.chromium.launch(executable_path="/usr/bin/google-chrome", args=["--no-sandbox"])
-            ctx = await b.new_context(viewport={"width": 402, "height": 778})
+            ctx = await b.new_context(viewport={"width": 402, "height": 778}, timezone_id="Europe/Berlin")
             seite = await ctx.new_page()
             fehler = []
             seite.on("pageerror", lambda e: fehler.append(str(e)))
@@ -233,6 +233,33 @@ async def main():
                     if (s1, t1, n1) != (s2, t2, n2):
                         csv_abw.append((art + q, s1, s2, n1, n2, repr(t1)[:900], repr(t2)[:900]))
             print(f"CSV: {csv_n} Dateien verglichen, {len(csv_abw)} Abweichungen")
+            # ── Bericht (Etappe 2): gleicher Text und gleiche Grafiken (Leerraum zwischen Tags egal) ──
+            import re as _re
+            def norm(h):
+                h = _re.sub(r"\s+", " ", h)
+                return _re.sub(r"\s*(<[^>]+>)\s*", r"\1", h).strip()
+            alle_teile = "zusammenfassung,vergleich,tage,mahlzeiten,notizen,windeln,medikamente,krank,zeitleiste,verlauf,gewicht,groesse,kopf,vorsorge,g_groesse,g_rhythmus,g_dauer,g_trend,g_gewicht"
+            ber_n, ber_abw = 0, []
+            for q in [f"von={vorgestern}&bis={heute}&teile={alle_teile}&fuer=hebamme&anliegen=Trinkt%20sie%20genug%3F%20%3Cb%3E%26%22",
+                      f"von={G}&bis={G}&teile={alle_teile}", f"von={G}T06:00&bis={heute}T06:00&teile={alle_teile}&fuer=kinderaerztin",
+                      f"von=2026-01-01&bis={heute}&teile={alle_teile}", f"von={heute}&bis={heute}", f"von=2026-11-01&bis=2026-11-30&teile=tage,notizen,g_trend,windeln",
+                      "von=x&bis=y"]:
+                try:
+                    with urllib.request.urlopen(f"http://127.0.0.1:8770/bericht?{q}") as r: h1 = r.read().decode("utf-8")
+                except urllib.error.HTTPError as e: h1 = "FEHLER " + e.read().decode()
+                h2 = await seite.evaluate("""async q => { const k = await import('./js/kern/kinder.js'); const t = await import('./js/lokal/tabellen.js');
+                    t.kindSetzen((await k.aktivesKind()).uid);
+                    const w = await (await import('./js/lokal/bericht/daten.js')).berichtDaten(new URLSearchParams(q));
+                    if (!w) return "FEHLER Zeitraum ungültig.";
+                    return (await import('./js/lokal/bericht/vorlage.js')).berichtHtml(w); }""", q)
+                ber_n += 1
+                n1, n2 = norm(h1), norm(h2)
+                if n1 != n2:
+                    i = next((k for k in range(min(len(n1), len(n2))) if n1[k] != n2[k]), min(len(n1), len(n2)))
+                    ber_abw.append((q[:60], len(n1), len(n2), n1[max(0, i - 160):i + 200], n2[max(0, i - 160):i + 200]))
+            print(f"Bericht: {ber_n} Berichte verglichen, {len(ber_abw)} Abweichungen")
+            for a in ber_abw:
+                print(f"\nBERICHT {a[0]} (Pi {a[1]} / Web {a[2]} Zeichen)\n  Pi : {a[3]}\n  Web: {a[4]}")
             for a in csv_abw:
                 print(f"\nCSV {a[0]}: Pi {a[1]} {a[3]} / Web {a[2]} {a[4]}\n  Pi : {a[5]}\n  Web: {a[6]}")
             print(f"{n} Anfragen verglichen, {len(abweichungen)} Abweichungen, Seitenfehler: {fehler}")

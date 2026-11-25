@@ -97,6 +97,9 @@ def uebernehmen(index, pi_version, web_version):
                  '      return `<span class="davor ruhig">${zahl}${absolut ? einheit : " %"} ${hoch ? "mehr" : "weniger"} als davor</span>`;\n'
                  '    return `<span class="davor ${hoch !== umgekehrt ? "hoch" : "tief"}"><span class="dz">${hoch ? "▲ +" : "▼ −"}${zahl}${absolut ? einheit : " %"}</span> zu davor</span>`;')
     s = ersetzen(s, '.replace("zu davor", "nasse zu davor")); }', '.replace("zu davor", "nasse zu davor").replace("als davor", "nasse Windeln als davor")); }')
+    # Bericht (Web 0.10.0): wird auf dem Handy erstellt und unter „Kinder, Backup & Abgleich“ abgelegt
+    s = ersetzen(s, '<p class="unter">Auf dem Pi erstellt, zum Zeigen, Drucken oder als PDF – und unter „Daten &amp; Sicherungen“ abgelegt.</p>',
+                 '<p class="unter">Auf dem Handy erstellt, zum Zeigen, Teilen, Drucken oder als PDF – und unter „Kinder, Backup &amp; Abgleich“ abgelegt.</p>')
     # 3) Kopfzeile: Kind-Knopf „Name ▾“ – immer sichtbar (Entscheidung 24.11.), links neben dem Seitentitel.
     #    Auf schmalen Handys ersetzt er den Seitentitel (welcher Reiter offen ist, zeigt die Leiste unten) – so bleibt
     #    rechts Platz für Stoppuhr, „○ Vitamin D“ und „Bericht“ wie in der Pi-Version.

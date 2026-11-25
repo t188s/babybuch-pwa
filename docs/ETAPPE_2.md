@@ -21,11 +21,14 @@ Entscheidungen 23.11.2026:
   Alt: – Pi `import_auswerten` + `/api/import/<art>` (Zeile ~2100–2355): Vorschau, Doppelte überspringen,
       alte Formate (0.3–1.x), Excel/Numbers-tolerant. Ziel: `js/lokal/csv/import.js`, Route `import/:art` ersetzt den Platzhalter
       in `js/lokal/api/sonstiges.js`. Testdatei-Regeln aus der Pi-Wunschliste (8 Zeilen mit allen Fallstricken) übernehmen.
-- [ ] **Bericht** – Pi `app.py` Teil 8 (Zeile ~2356–3010) + `templates/bericht.html` (Jinja, 453 Zeilen):
+- [x] **Bericht** (0.10.0) – `bericht.html` + `js/pwa/bericht-seite.js`, `js/lokal/bericht/{naiv,grafiken,daten,vorlage}.js`. 7 Berichte (tests/vergleich_mit_pi.py) und 6 große Berichte mit 4 Monaten Daten (tests/bericht_gross_mit_pi.py) inhaltlich und grafisch gleich mit Pi 3.0.2. Öffnet im selben Fenster (iPhone: gleiche Daten), „Teilen“ als HTML-Datei, Ablage der letzten 50 unter Kinder, Backup & Abgleich.
+  Alt: Pi `app.py` Teil 8 (Zeile ~2356–3010) + `templates/bericht.html` (Jinja, 453 Zeilen):
       Daten (`bericht()`), Grafiken (`svg_rhythmus`, `svg_zeitleiste`, `svg_balken`, `svg_wachstum`, `trend_eimer`) und Vorlage
       nach JavaScript. Ziel: `bericht.html` (statische Seite der Web-App, liest dieselben Parameter wie `/bericht?…`),
       `js/lokal/bericht/{daten,grafiken,vorlage}.js`. `pi_uebernehmen.py`: Link `bericht?` → `bericht.html?`.
       Ablage (letzte 50) in IndexedDB, Liste in „Kinder, Backup & Abgleich“; Route `berichte` liefert sie.
-- [ ] **Bericht: Fläschchen, Abpumpen, Beikost** (seit Web 0.7.0, gibt es auf dem Pi noch nicht) – eigener Berichtsteil
+- [x] **Bericht: Fläschchen, Abpumpen, Beikost** (0.10.0) – erscheint automatisch, wenn es im Zeitraum Einträge gibt.
+  Alt: (seit Web 0.7.0, gibt es auf dem Pi noch nicht) – eigener Berichtsteil
       „ernaehrung“ (Kennzahlen wie Auswertung › Fläschchen, Beikost-Liste mit „zum ersten Mal“); Daten über `js/kern/ernaehrung.js`.
-- [ ] **Vergleichstest** erweitern: CSV-Export und Bericht gegen den Pi-Server (gleiche Daten → gleicher Text bzw. gleiche Zahlen).
+- [x] **Vergleichstest** erweitert (CSV 54/54, Import 15/15, Bericht 7/7 + 6/6 groß)
+  Alt:: CSV-Export und Bericht gegen den Pi-Server (gleiche Daten → gleicher Text bzw. gleiche Zahlen).
