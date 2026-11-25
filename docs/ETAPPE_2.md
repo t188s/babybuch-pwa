@@ -24,4 +24,6 @@ Entscheidungen 23.11.2026:
       nach JavaScript. Ziel: `bericht.html` (statische Seite der Web-App, liest dieselben Parameter wie `/bericht?…`),
       `js/lokal/bericht/{daten,grafiken,vorlage}.js`. `pi_uebernehmen.py`: Link `bericht?` → `bericht.html?`.
       Ablage (letzte 50) in IndexedDB, Liste in „Kinder, Backup & Abgleich“; Route `berichte` liefert sie.
+- [ ] **Bericht: Fläschchen, Abpumpen, Beikost** (seit Web 0.7.0, gibt es auf dem Pi noch nicht) – eigener Berichtsteil
+      „ernaehrung“ (Kennzahlen wie Auswertung › Fläschchen, Beikost-Liste mit „zum ersten Mal“); Daten über `js/kern/ernaehrung.js`.
 - [ ] **Vergleichstest** erweitern: CSV-Export und Bericht gegen den Pi-Server (gleiche Daten → gleicher Text bzw. gleiche Zahlen).

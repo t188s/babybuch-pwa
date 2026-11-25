@@ -54,3 +54,29 @@ html.nachtmodus[data-design="blau"] {
 .pwa-design .umschalter { min-width: 11rem; }
 .pwa-schritte { margin: 4px 0 8px; padding-left: 1.3em; line-height: 1.45; }
 .pwa-schritte li { margin: 6px 0; }
+
+/* ── Fläschchen, Abpumpen, Beikost (0.7.0) ── */
+#bereich-eintragen[data-pwa-modus]:not([data-pwa-modus="stillen"]) > :is(.status, .balance, .formular, .speichern-leiste) { display: none !important; }
+#pwa-ern:not([hidden]) { display: contents; }
+.pwa-ern-umschalter button { min-height: 34px; font-size: .85rem; }
+.umschalter.pwa-klein button { min-height: 40px; font-size: .85rem; padding: 0 4px; }
+.pwa-bk-chips { margin-top: 6px; }
+.pwa-bk-neu { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; font-size: .9rem; }
+.pwa-balken { width: 100%; height: auto; display: block; margin-top: 6px; }
+.pwa-balken rect.f { fill: var(--gold); }
+.pwa-balken rect.p { fill: var(--text-leise); }
+.pwa-balken text { fill: var(--text-leise); font-size: 9px; }
+.pwa-farbe { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin: 0 4px 0 8px; vertical-align: -1px; }
+.pwa-farbe.f { background: var(--gold); margin-left: 0; }
+.pwa-farbe.p { background: var(--text-leise); }
+.pwa-ern-einst { margin-top: 10px; }
+.pwa-ern-einst .label { margin: 0; }
+/* Sehr niedrige Bildschirme (iPhone SE im Browser): die zusätzliche Zeile Brust | Fläschchen … darf nicht zum Scrollen führen */
+@media (max-height: 620px) {
+  #bereich-eintragen .alltag-wahl button { min-height: 31px; }
+  .pwa-ern-umschalter button { min-height: 26px; font-size: .8rem; }
+  #pwa-ern-wahl:not([hidden]) { margin-top: -4px; }
+  #bereich-eintragen .status .detail { margin-top: 0; }
+  #bereich-eintragen .formular { padding-bottom: 0; }
+  #bereich-eintragen .notiz-chip { min-height: 32px; }
+}

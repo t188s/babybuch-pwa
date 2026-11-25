@@ -73,6 +73,17 @@ export async function beispielkindAnlegen() {
     }
   }
 
+  // ── Abpumpen & Fläschchen (ab Woche 3): morgens abpumpen, abends ein Fläschchen Muttermilch vom Papa, selten Pre ──
+  for (let n = 14; n <= 42; n++) {
+    const pumpe = bei(n, 9, Math.floor(z() * 40));
+    if (vergangen(pumpe) && z() < 0.8) zeile("abpumpen", { zeit: zeit(pumpe), ml: 60 + 5 * Math.floor(z() * 13), seite: z() < 0.7 ? "B" : "L", notiz: "" });
+    const flasche = bei(n, 20, 30 + Math.floor(z() * 25));
+    if (vergangen(flasche) && z() < 0.75) {
+      const pre = z() < 0.15;
+      zeile("flasche", { zeit: zeit(flasche), ml: 50 + 10 * Math.floor(z() * 7), art: pre ? "pre" : "muttermilch", notiz: pre ? "zugefüttert" : "" });
+    }
+  }
+
   // ── Wachstum (Geburt 3350 g, Tiefpunkt Tag 3, Geburtsgewicht nach ~10 Tagen wieder erreicht) ──
   for (const [n, g] of [[0, 3350], [3, 3150], [5, 3200], [8, 3310], [12, 3420], [19, 3660], [26, 3890], [31, 4040], [38, 4280], [42, 4390]])
     if (vergangen(bei(n, 10))) zeile("gewicht", { datum: datum(tagNr(n)), gramm: g });

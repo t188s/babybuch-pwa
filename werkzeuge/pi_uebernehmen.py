@@ -69,6 +69,22 @@ def uebernehmen(index, pi_version, web_version):
                  '<h3>Baby</h3>\n    <div id="pwa-baby"></div>\n    <div id="pi-baby-felder" hidden>\n    <div class="einstellung">\n      <label for="baby-name">')
     s = ersetzen(s, '<p class="unter" id="baby-gg-vorschlag" style="margin:-4px 0 0;text-align:right" hidden></p>',
                  '<p class="unter" id="baby-gg-vorschlag" style="margin:-4px 0 0;text-align:right" hidden></p>\n    </div>')
+    # ── Fläschchen, Abpumpen, Beikost (Web 0.7.0, js/pwa/ernaehrung*.js) ──
+    # Stillen-Reiter: Umschalter Brust | Fläschchen | Abpumpen | Beikost unter der Alltag-Wahl, eigenes Feld am Ende
+    s = ersetzen(s, '<button type="button" data-ico="stillen" data-a="eintragen" class="aktiv">Stillen</button><button type="button" data-ico="windeln" data-a="windeln">Windeln</button><button type="button" data-ico="fieber" data-a="fieber">Fieber &amp; Co.</button></div>',
+                 '<button type="button" data-ico="stillen" data-a="eintragen" class="aktiv">Stillen</button><button type="button" data-ico="windeln" data-a="windeln">Windeln</button><button type="button" data-ico="fieber" data-a="fieber">Fieber &amp; Co.</button></div>\n    <div id="pwa-ern-wahl" hidden></div>')
+    s = ersetzen(s, '<button class="speichern-knopf" id="speichern">Speichern</button>\n    </div>\n  </section>',
+                 '<button class="speichern-knopf" id="speichern">Speichern</button>\n    </div>\n    <div id="pwa-ern" hidden></div>\n  </section>')
+    # Auswertung: Unterreiter „Fläschchen“ + Teil; Überblick bekommt Kacheln
+    s = ersetzen(s, '<button data-teil="stillen" data-ico="stillen">Stillen</button>',
+                 '<button data-teil="stillen" data-ico="stillen">Stillen</button>\n        <button data-teil="ernaehrung" data-ico="stillen" id="pwa-aw-ern-knopf" hidden>Fläschchen</button>')
+    s = ersetzen(s, '    <!-- Teil: Stillen -->', '    <!-- Teil: Fläschchen & Co. (Web-App) -->\n    <div class="teil" data-teil="ernaehrung" id="pwa-aw-ern" hidden></div>\n\n    <!-- Teil: Stillen -->')
+    s = ersetzen(s, '    if (teil === "ueberblick") return ueberblickZeichnen(z);',
+                 '    if (teil === "ernaehrung") return window.PWA_ERN_AW?.teil(z);\n'
+                 '    if (teil === "ueberblick") return ueberblickZeichnen(z).then(() => window.PWA_ERN_AW?.ueberblick(z));')
+    # Einstellungen › Baby: Auswahl „Ernährung“ am Ende des Abschnitts (nach dem WHO-Hinweis)
+    s = ersetzen(s, '  </div>\n  <div class="abschnitt">\n    <h3>Erinnerungen</h3>',
+                 '    <div id="pwa-ern-einst"></div>\n  </div>\n  <div class="abschnitt">\n    <h3>Erinnerungen</h3>')
     # 3) Kopfzeile: Kind-Knopf „Name ▾“ – immer sichtbar (Entscheidung 24.11.), links neben dem Seitentitel.
     #    Auf schmalen Handys ersetzt er den Seitentitel (welcher Reiter offen ist, zeigt die Leiste unten) – so bleibt
     #    rechts Platz für Stoppuhr, „○ Vitamin D“ und „Bericht“ wie in der Pi-Version.

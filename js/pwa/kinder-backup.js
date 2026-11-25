@@ -7,7 +7,7 @@ import { alleKinder, aktivesKind, kindSpeichern, aktivSetzen, alterText, kindEnt
 import { APP_VERSION } from "../kern/version.js";
 import { $, neu, knopf, fenster, knopfReihe, nachfragen, toast, fehler, zeile, abschnitt, listenZeile, datumDe } from "../ui/bausteine.js";
 
-const TYP_NAMEN = { kind: "Kind", stillen: "Stillen", windeln: "Windel", gewicht: "Gewicht", groesse: "Größe", kopfumfang: "Kopfumfang",
+const TYP_NAMEN = { kind: "Kind", stillen: "Stillen", flasche: "Fläschchen", abpumpen: "Abpumpen", beikost: "Beikost", windeln: "Windel", gewicht: "Gewicht", groesse: "Größe", kopfumfang: "Kopfumfang",
   fieber: "Temperatur", symptome: "Symptom", medikamente: "Medikament", gaben: "Gabe abgehakt", taegliche_gaben: "Regelmäßige Gabe",
   untersuchungen: "U-Untersuchung", screenings: "Abhakliste Geburt", impfungen: "Impfung", impfplan: "Impfplan", arztbesuche: "Arztbesuch",
   massnahmen: "Maßnahme", einstellung: "Einstellung" };

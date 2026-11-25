@@ -863,6 +863,7 @@
   <!-- ══════════ BEREICH 1: EINTRAGEN ══════════ -->
   <section class="bereich" id="bereich-eintragen" aria-label="Eintragen">
     <div class="umschalter alltag-wahl"><button type="button" data-ico="stillen" data-a="eintragen" class="aktiv">Stillen</button><button type="button" data-ico="windeln" data-a="windeln">Windeln</button><button type="button" data-ico="fieber" data-a="fieber">Fieber &amp; Co.</button></div>
+    <div id="pwa-ern-wahl" hidden></div>
     <div class="status" aria-live="polite">
       <div class="status-knopf" id="status-knopf" role="button" tabindex="0" aria-label="Letzten Eintrag bearbeiten oder löschen">
         <p class="eyebrow" data-ico="stillen">Zuletzt gestillt</p>
@@ -941,6 +942,7 @@
       </div>
       <button class="speichern-knopf" id="speichern">Speichern</button>
     </div>
+    <div id="pwa-ern" hidden></div>
   </section>
 
   <!-- ══════════ BEREICH 2: AUSWERTUNG ══════════ -->
@@ -1130,6 +1132,7 @@
       <div class="wischzeile" id="unterreiter" role="tablist">
         <button data-teil="ueberblick" data-ico="ueberblick" class="aktiv">Überblick</button>
         <button data-teil="stillen" data-ico="stillen">Stillen</button>
+        <button data-teil="ernaehrung" data-ico="stillen" id="pwa-aw-ern-knopf" hidden>Fläschchen</button>
         <button data-teil="windeln" data-ico="windeln">Windeln</button>
         <button data-teil="gewicht" data-ico="wachstum">Wachstum</button>
         <button data-teil="gesundheit" data-ico="gesundheit">Gesundheit</button>
@@ -1153,6 +1156,9 @@
         <p class="who-hinweis" style="margin:6px 0 0" id="trend-hinweis">Nur zur Orientierung</p>
       </div>
     </div>
+
+    <!-- Teil: Fläschchen & Co. (Web-App) -->
+    <div class="teil" data-teil="ernaehrung" id="pwa-aw-ern" hidden></div>
 
     <!-- Teil: Stillen -->
     <div class="teil" data-teil="stillen" hidden>
@@ -1233,7 +1239,7 @@
     </div>
 
     <div class="karte mehr">
-      <button type="button" id="einstellungen-knopf">Einstellungen &amp; Export <span class="pfeil">Version Web 0.6.0 · Pi 3.0.2 ›</span></button>
+      <button type="button" id="einstellungen-knopf">Einstellungen &amp; Export <span class="pfeil">Version Web 0.7.0 · Pi 3.0.2 ›</span></button>
       <button type="button" id="pwa-daten-2">Kinder, Backup &amp; Abgleich <span class="pfeil">›</span></button>
     </div>
     <button type="button" class="g-bericht-knopf" id="a-bericht" hidden>Bericht erstellen · Hebamme oder Kinderärztin <span>›</span></button>
@@ -1470,6 +1476,7 @@
     <p class="unter" id="baby-gg-vorschlag" style="margin:-4px 0 0;text-align:right" hidden></p>
     </div>
     <p class="unter" style="margin:6px 0 0">Gut zu wissen: Bei der Geburt ordnet die Ärztin das Gewicht meist nach Schwangerschaftswoche ein. Die WHO-Perzentile der App vergleicht ohne Schwangerschaftswoche und kann davon abweichen – ab den ersten Lebenswochen ist die WHO-Kurve der übliche Maßstab (auch im U-Heft).</p>
+    <div id="pwa-ern-einst"></div>
   </div>
   <div class="abschnitt">
     <h3>Erinnerungen</h3>
@@ -1505,7 +1512,7 @@
   <div class="dialog-knoepfe" style="grid-template-columns:1fr;margin-top:18px">
     <button id="einstellungen-fertig" class="haupt">Fertig</button>
   </div>
-  <p class="unter" style="text-align:center;margin:12px 0 0">Babybuch · Version Web 0.6.0 · Pi 3.0.2</p>
+  <p class="unter" style="text-align:center;margin:12px 0 0">Babybuch · Version Web 0.7.0 · Pi 3.0.2</p>
 </dialog>
 
 <!-- "Beide": an welcher Seite zuletzt? -->
@@ -1937,7 +1944,7 @@
   // ════════════════════════════════════════════════════════
   const NUTZUNG = (() => {
     const ZUSTAND = ["aktiv", "fertig", "faellig", "an", "gefuellt", "laeuft", "heute", "ueber", "sichtbar", "zu"];
-    const VERSION = "web-0.6.0", SICHER = ["a", "t", "teil", "ansicht", "w", "sym", "seite", "art", "bereich", "h", "gesamt", "d"];
+    const VERSION = "web-0.7.0", SICHER = ["a", "t", "teil", "ansicht", "w", "sym", "seite", "art", "bereich", "h", "gesamt", "d"];
     const lies = (k, d) => { try { return localStorage.getItem(k) ?? d; } catch (_) { return d; } };
     const schreib = (k, v) => { try { localStorage.setItem(k, v); } catch (_) { /* egal */ } };
     let geraet = lies("nutzungGeraet", null);
@@ -2752,7 +2759,8 @@
     for (const t of document.querySelectorAll(".teil")) t.hidden = t.dataset.teil !== teil;
     for (const k of $("unterreiter").children) k.classList.toggle("aktiv", k.dataset.teil === teil);
     NUTZUNG.ansicht(`auswertung/${teil}/${ansicht === "spanne" ? STUFEN[stufe] + "T" : ansicht}`);
-    if (teil === "ueberblick") return ueberblickZeichnen(z);
+    if (teil === "ernaehrung") return window.PWA_ERN_AW?.teil(z);
+    if (teil === "ueberblick") return ueberblickZeichnen(z).then(() => window.PWA_ERN_AW?.ueberblick(z));
     if (teil === "windeln") return windelnZeichnen(z);
     if (teil === "gewicht") return gewichtZeichnen();
     if (teil === "gesundheit") return agZeichnen(z);

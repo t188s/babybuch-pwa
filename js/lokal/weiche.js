@@ -42,6 +42,8 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     import("../pwa/kinder-backup.js").then(m => m.einbauen()).catch(e => console.error(e));
+    import("../pwa/ernaehrung.js").then(m => m.einbauen()).catch(e => console.error(e));
+    import("../pwa/ernaehrung-auswertung.js").catch(e => console.error(e));
     if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(e => console.warn("Offline-Speicher:", e));
     import("../kern/speicher.js").then(s => { s.dauerhaftAnfordern(); s.aufraeumen(); }).catch(() => {});
   });

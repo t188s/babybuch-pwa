@@ -1,5 +1,4 @@
 # Klicktest der Web-App mit der Pi-Oberfläche 3.0.2: erster Start, alle Reiter, Einträge per Oberfläche, Bildschirmgrößen
-# Aufruf: python3 tests/klicktest.py <Ordner der Web-App> <Ordner für Bildschirmfotos>
 import asyncio, sys, http.server, threading, functools, os
 from playwright.async_api import async_playwright
 WEB, AUS = sys.argv[1], sys.argv[2]
@@ -20,7 +19,7 @@ async def main():
         p.on("console", lambda m: fehler.append("console: " + m.text) if m.type == "error" else None)
         await p.goto(URL); await p.wait_for_timeout(1200)
         await p.screenshot(path=f"{AUS}/01_willkommen.png")
-        await p.fill("#pk-name", "Mila"); await p.fill("#pk-geburt", "2026-10-05")
+        await p.fill("#pk-name", "Mila"); await p.fill("#pk-geburt", "2026-11-16")
         await p.locator("dialog[open] .umschalter button[data-g=w]").click()
         await p.fill("#pk-gg", "3350")
         await p.locator("dialog[open]").get_by_role("button", name="Anlegen").click()
@@ -60,7 +59,7 @@ async def main():
             await p.set_viewport_size({"width": w, "height": h})
             await p.click("#tab-eintragen"); await p.wait_for_timeout(400)
             ueber = await p.evaluate("document.documentElement.scrollWidth > innerWidth + 1")
-            scroll = await p.evaluate("(() => { const m = document.getElementById('scroll'); return m.scrollHeight > m.clientHeight + 1; })()")
+            scroll = await p.evaluate("(() => { const m = document.getElementById('scroll'); return m.scrollHeight - m.clientHeight; })()")
             print(f"{w}×{h}: seitlicher Überlauf {ueber} · Stillen muss scrollen {scroll}")
             await p.screenshot(path=f"{AUS}/08_{w}x{h}.png")
         print("Fehler:", fehler or "keine")

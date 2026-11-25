@@ -167,3 +167,24 @@ test("Backup-Datei aus neuerer Version wird klar abgelehnt", async () => {
   assert.equal(r.ok, false);
   assert.match(r.fehler, /neueren Babybuch-Version/);
 });
+
+test("Ernährung: Auswahl, Summen je Tag, Kennzahlen, Texte", async () => {
+  const e = await import("../js/kern/ernaehrung.js");
+  assert.deepEqual(e.ernaehrungAuswahl(null, 30), ["stillen", "flasche", "abpumpen"]);
+  assert.deepEqual(e.ernaehrungAuswahl(null, 130), ["stillen", "flasche", "abpumpen", "beikost"]);
+  assert.deepEqual(e.ernaehrungAuswahl(["beikost", "flasche", "quatsch"], 10), ["flasche", "beikost"]);
+  assert.deepEqual(e.ernaehrungAuswahl([], 10), ["stillen", "flasche", "abpumpen"]);
+  const f = [{ zeit: "2026-11-20T08:00", ml: 120, art: "pre" }, { zeit: "2026-11-20T12:00", ml: 90, art: "muttermilch" }, { zeit: "2026-11-21T08:00", ml: 100, art: "pre" }];
+  const p = [{ zeit: "2026-11-21T09:00", ml: 80, seite: "L" }];
+  const b = [{ zeit: "2026-11-21T11:00", was: "Karotte", menge: "wenig", neu: 1 }, { zeit: "2026-11-22T11:00", was: "Karotte", menge: "halb", neu: 0 }];
+  const t = e.jeTag(["2026-11-20", "2026-11-21"], f, p, b);
+  assert.deepEqual(t[0], { tag: "2026-11-20", flaschen: 2, flascheMl: 210, pumpen: 0, pumpenMl: 0, beikost: 0 });
+  assert.equal(t[1].pumpenMl, 80); assert.equal(t[1].beikost, 1);
+  const k = e.kennzahlen({ flaschen: f, pumpen: p, beikost: b, tage: 2 });
+  assert.equal(k.flascheMl, 310); assert.equal(k.flascheMlProTag, 155); assert.equal(k.artenMl.pre, 220);
+  assert.deepEqual(k.beikostNeu, ["Karotte"]);
+  assert.equal(e.eintragText("flasche", f[0]), "120 ml Pre-Milch");
+  assert.equal(e.eintragText("abpumpen", p[0]), "80 ml · Links");
+  assert.equal(e.eintragText("beikost", b[0]), "Karotte · ein paar Löffel · zum ersten Mal");
+  assert.equal(e.mlGueltig(0), true); assert.equal(e.mlGueltig(401), false); assert.equal(e.mlGueltig(12.5), false);
+});
