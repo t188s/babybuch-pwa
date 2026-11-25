@@ -1239,7 +1239,7 @@
     </div>
 
     <div class="karte mehr">
-      <button type="button" id="einstellungen-knopf">Einstellungen &amp; Export <span class="pfeil">Version Web 0.7.0 · Pi 3.0.2 ›</span></button>
+      <button type="button" id="einstellungen-knopf">Einstellungen &amp; Export <span class="pfeil">Version Web 0.8.0 · Pi 3.0.2 ›</span></button>
       <button type="button" id="pwa-daten-2">Kinder, Backup &amp; Abgleich <span class="pfeil">›</span></button>
     </div>
     <button type="button" class="g-bericht-knopf" id="a-bericht" hidden>Bericht erstellen · Hebamme oder Kinderärztin <span>›</span></button>
@@ -1446,6 +1446,12 @@
       <button type="button" data-design="blau">Dusty Blue</button><button type="button" data-design="gold">Gold</button>
     </div>
   </div>
+  <div class="einstellung pwa-design">
+    <label>Vergleiche<br><span class="zuletzt-hinweis">„zu davor“ in der Auswertung</span></label>
+    <div class="umschalter" id="pwa-vergleich" role="group" aria-label="Vergleiche zu davor">
+      <button type="button" data-vergleich="ruhig">Ruhig</button><button type="button" data-vergleich="farbig">Farbig</button>
+    </div>
+  </div>
   <div class="einstellung">
     <label for="nachtmodus">Gedimmt in der Nacht<br><span class="zuletzt-hinweis">schont die Augen beim Stillen</span></label>
     <button type="button" class="schalter" id="nachtmodus" role="switch" aria-checked="true" aria-label="Gedimmter Nachtmodus"></button>
@@ -1512,7 +1518,7 @@
   <div class="dialog-knoepfe" style="grid-template-columns:1fr;margin-top:18px">
     <button id="einstellungen-fertig" class="haupt">Fertig</button>
   </div>
-  <p class="unter" style="text-align:center;margin:12px 0 0">Babybuch · Version Web 0.7.0 · Pi 3.0.2</p>
+  <p class="unter" style="text-align:center;margin:12px 0 0">Babybuch · Version Web 0.8.0 · Pi 3.0.2</p>
 </dialog>
 
 <!-- "Beide": an welcher Seite zuletzt? -->
@@ -1944,7 +1950,7 @@
   // ════════════════════════════════════════════════════════
   const NUTZUNG = (() => {
     const ZUSTAND = ["aktiv", "fertig", "faellig", "an", "gefuellt", "laeuft", "heute", "ueber", "sichtbar", "zu"];
-    const VERSION = "web-0.7.0", SICHER = ["a", "t", "teil", "ansicht", "w", "sym", "seite", "art", "bereich", "h", "gesamt", "d"];
+    const VERSION = "web-0.8.0", SICHER = ["a", "t", "teil", "ansicht", "w", "sym", "seite", "art", "bereich", "h", "gesamt", "d"];
     const lies = (k, d) => { try { return localStorage.getItem(k) ?? d; } catch (_) { return d; } };
     const schreib = (k, v) => { try { localStorage.setItem(k, v); } catch (_) { /* egal */ } };
     let geraet = lies("nutzungGeraet", null);
@@ -2725,6 +2731,8 @@
     const d = absolut ? jetzt - vorher : Math.round((jetzt - vorher) / vorher * 100);
     if (Math.abs(d) < (absolut ? 0.5 : 3)) return `<span class="davor"><span class="dz">≈</span> wie davor</span>`;
     const hoch = d > 0, zahl = absolut ? String(Math.round(Math.abs(d))) : String(Math.abs(d));
+    if (document.documentElement.dataset.vergleich !== "farbig")
+      return `<span class="davor ruhig">${zahl}${absolut ? einheit : " %"} ${hoch ? "mehr" : "weniger"} als davor</span>`;
     return `<span class="davor ${hoch !== umgekehrt ? "hoch" : "tief"}"><span class="dz">${hoch ? "▲ +" : "▼ −"}${zahl}${absolut ? einheit : " %"}</span> zu davor</span>`;
   }
 
@@ -3395,7 +3403,7 @@
       summe.replaceChildren("Ø/Tag ", neu("i", "punkt p-nass"), " ", neu("b", "", komma(z.nass / mitDaten)), " nass · ", neu("i", "punkt p-voll"), " ", neu("b", "", komma(z.voll / mitDaten)), " voll");
     }
     if (alt.length) { const tA = Math.max(1, new Set(alt.map(w => w.zeit.slice(0, 10))).size), tJ = Math.max(1, new Set(liste.map(w => w.zeit.slice(0, 10))).size);
-      summe.insertAdjacentHTML("beforeend", davorHtml(tagArtig() ? z.nass : z.nass / tJ, tagArtig() ? za.nass : za.nass / tA).replace("zu davor", "nasse zu davor")); }
+      summe.insertAdjacentHTML("beforeend", davorHtml(tagArtig() ? z.nass : z.nass / tJ, tagArtig() ? za.nass : za.nass / tA).replace("zu davor", "nasse zu davor").replace("als davor", "nasse Windeln als davor")); }
     // Liste nur in der Tagesansicht
     $("windel-diagramm").hidden = tagArtig();
     $("windel-liste").replaceChildren();

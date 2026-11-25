@@ -364,6 +364,16 @@ export async function einbauen() {
     dz.querySelectorAll("button").forEach(b => b.onclick = () => { window.PWA_DESIGN.setzen(b.dataset.design); markieren(); });
     markieren();
   }
+  // Umschalter „Vergleiche“ (ruhig/farbig) – gilt fürs Gerät
+  const vz = $("pwa-vergleich");
+  if (vz && window.PWA_DESIGN) {
+    const markieren = () => vz.querySelectorAll("button").forEach(b => b.classList.toggle("aktiv", b.dataset.vergleich === window.PWA_DESIGN.vergleichLesen()));
+    vz.querySelectorAll("button").forEach(b => b.onclick = () => {
+      window.PWA_DESIGN.vergleichSetzen(b.dataset.vergleich); markieren();
+      try { if (typeof auswertungLaden === "function") auswertungLaden().catch(() => {}); } catch (_) { /* egal */ }   // eslint-disable-line no-undef
+    });
+    markieren();
+  }
   for (const id of ["pwa-daten", "pwa-daten-2"]) if ($(id)) $(id).onclick = () => oeffnen().catch(fehler);
   hinweisZeichnen();
 }

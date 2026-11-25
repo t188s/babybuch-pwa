@@ -8,5 +8,14 @@
     try { localStorage.setItem(SCHLUESSEL, w); } catch (e) {}
   }
   document.documentElement.setAttribute("data-design", lesen());
-  window.PWA_DESIGN = { lesen: lesen, setzen: setzen };
+
+  // „Vergleiche zu davor“ in der Auswertung: ruhig (Standard, ohne Pfeile und Farben) oder farbig wie die Pi-Version
+  var V_SCHLUESSEL = "babybuch-vergleich";
+  function vergleichLesen() { try { return localStorage.getItem(V_SCHLUESSEL) === "farbig" ? "farbig" : "ruhig"; } catch (e) { return "ruhig"; } }
+  function vergleichSetzen(w) {
+    document.documentElement.setAttribute("data-vergleich", w);
+    try { localStorage.setItem(V_SCHLUESSEL, w); } catch (e) {}
+  }
+  document.documentElement.setAttribute("data-vergleich", vergleichLesen());
+  window.PWA_DESIGN = { lesen: lesen, setzen: setzen, vergleichLesen: vergleichLesen, vergleichSetzen: vergleichSetzen };
 })();

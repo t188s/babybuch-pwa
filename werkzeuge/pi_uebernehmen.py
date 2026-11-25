@@ -58,6 +58,12 @@ def uebernehmen(index, pi_version, web_version):
       <button type="button" data-design="blau">Dusty Blue</button><button type="button" data-design="gold">Gold</button>
     </div>
   </div>
+  <div class="einstellung pwa-design">
+    <label>Vergleiche<br><span class="zuletzt-hinweis">„zu davor“ in der Auswertung</span></label>
+    <div class="umschalter" id="pwa-vergleich" role="group" aria-label="Vergleiche zu davor">
+      <button type="button" data-vergleich="ruhig">Ruhig</button><button type="button" data-vergleich="farbig">Farbig</button>
+    </div>
+  </div>
   <div class="einstellung">
     <label for="nachtmodus">Gedimmt in der Nacht''')
     # Einstellungen gelten in der Web-App pro Kind und Handy (nicht „für alle Geräte“ wie beim Pi-Server)
@@ -85,6 +91,12 @@ def uebernehmen(index, pi_version, web_version):
     # Einstellungen › Baby: Auswahl „Ernährung“ am Ende des Abschnitts (nach dem WHO-Hinweis)
     s = ersetzen(s, '  </div>\n  <div class="abschnitt">\n    <h3>Erinnerungen</h3>',
                  '    <div id="pwa-ern-einst"></div>\n  </div>\n  <div class="abschnitt">\n    <h3>Erinnerungen</h3>')
+    # Ruhige Auswertung (Web 0.8.0): „13 % mehr als davor“ statt „▲ +13 %“ in Grün/Orange – Standard, umschaltbar
+    s = ersetzen(s, '    return `<span class="davor ${hoch !== umgekehrt ? "hoch" : "tief"}"><span class="dz">${hoch ? "▲ +" : "▼ −"}${zahl}${absolut ? einheit : " %"}</span> zu davor</span>`;',
+                 '    if (document.documentElement.dataset.vergleich !== "farbig")\n'
+                 '      return `<span class="davor ruhig">${zahl}${absolut ? einheit : " %"} ${hoch ? "mehr" : "weniger"} als davor</span>`;\n'
+                 '    return `<span class="davor ${hoch !== umgekehrt ? "hoch" : "tief"}"><span class="dz">${hoch ? "▲ +" : "▼ −"}${zahl}${absolut ? einheit : " %"}</span> zu davor</span>`;')
+    s = ersetzen(s, '.replace("zu davor", "nasse zu davor")); }', '.replace("zu davor", "nasse zu davor").replace("als davor", "nasse Windeln als davor")); }')
     # 3) Kopfzeile: Kind-Knopf „Name ▾“ – immer sichtbar (Entscheidung 24.11.), links neben dem Seitentitel.
     #    Auf schmalen Handys ersetzt er den Seitentitel (welcher Reiter offen ist, zeigt die Leiste unten) – so bleibt
     #    rechts Platz für Stoppuhr, „○ Vitamin D“ und „Bericht“ wie in der Pi-Version.

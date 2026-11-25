@@ -80,3 +80,7 @@ html.nachtmodus[data-design="blau"] {
   #bereich-eintragen .formular { padding-bottom: 0; }
   #bereich-eintragen .notiz-chip { min-height: 32px; }
 }
+
+/* Ruhige Auswertung (0.8.0): Vergleiche ohne Signalfarben */
+html[data-vergleich="ruhig"] .davor .dz { color: inherit; font-weight: 500; }
+html[data-vergleich="ruhig"] .vergleich td.trend { color: var(--text-leise); }
