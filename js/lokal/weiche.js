@@ -19,7 +19,7 @@
   };
 
   // Bericht, CSV-Tabellen und Kalender erzeugt auf dem Pi der Server – in der Web-App kommen sie mit dem nächsten Update.
-  const BALD = "Kommt mit dem nächsten Update der Web-App (Bericht und CSV-Tabellen).";
+  const BALD = "Kommt mit dem nächsten Update der Web-App (Bericht).";
   window.PWA_BALD = () => (typeof window.zeigeToast === "function" ? window.zeigeToast(BALD) : alert(BALD));
   // Kalender: Termin aus Vorsorge (wie Pi) und – neu – täglicher Serientermin nach dem Anlegen einer regelmäßigen Gabe
   window.PWA_KALENDER = q => import("../pwa/kalender.js").then(k => {
@@ -37,6 +37,10 @@
     if (!a) return;
     ev.preventDefault();
     ev.stopPropagation();
+    const href = a.getAttribute("href") || "";
+    if (/(^|\/)export\//.test(href))           // CSV-Tabellen: lokal erzeugen, teilen bzw. herunterladen
+      return import("../pwa/teilen.js").then(m => m.exportLink(href))
+        .catch(f => window.zeigeToast?.(f.message || String(f)));
     window.PWA_BALD();
   }, true);
 

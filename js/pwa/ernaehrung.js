@@ -109,10 +109,26 @@ async function zeigen(neuerModus) {
   feldZiel.hidden = modus === "stillen";
   if (modus === "stillen") return;
   notiz = ""; zeitGesetzt = null;
+  await vorbelegen(modus);
   feldZiel.replaceChildren(neu("div", "status"), formularBauen(), leisteBauen());
   feldZiel.firstChild.id = "pwa-ern-status";
   await statusZeichnen();
   zusammenfassungZeichnen();
+}
+
+/** Einmal je Art: Formular wie der letzte Eintrag (gleiche Milch, gleiche Menge, gleiche Seite). */
+const vorbelegt = new Set();
+async function vorbelegen(typ) {
+  if (vorbelegt.has(typ) || typ === "beikost") return;
+  vorbelegt.add(typ);
+  try {
+    const [l] = await api(`${typ}/letzte`);
+    if (!l) return;
+    const st = formStand[typ];
+    if (Number.isInteger(l.ml)) st.ml = Math.min(300, l.ml);
+    if (typ === "flasche" && l.art) st.art = l.art;
+    if (typ === "abpumpen" && l.seite) st.seite = l.seite;
+  } catch (_) { /* ohne Vorbelegung */ }
 }
 
 // ── Status: Zuletzt … / Heute … ──

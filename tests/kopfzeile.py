@@ -14,7 +14,7 @@ async def main():
         p = await ctx.new_page(); fehler = []
         p.on("pageerror", lambda e: fehler.append(str(e)))
         await p.goto("http://127.0.0.1:8772/"); await p.wait_for_timeout(1000)
-        await p.locator("dialog[open]").get_by_role("button", name="Beispielkind ansehen").click()
+        await p.locator("dialog[open]").get_by_role("button", name="Demo ansehen").click()
         await p.wait_for_function("!document.querySelector('dialog[open]')", timeout=30000)
         await p.evaluate("(async () => { const k = await import('./js/kern/kinder.js'); const a = await k.aktivesKind(); await k.kindSpeichern({ name: 'Maximilian' }); await k.aktivSetzen(a.uid); })()")
         jetzt = datetime.datetime.now() - datetime.timedelta(minutes=3)

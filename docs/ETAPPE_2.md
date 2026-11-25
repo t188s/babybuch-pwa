@@ -13,7 +13,8 @@ Entscheidungen 23.11.2026:
 
 - [x] **Kalender** (0.3.0) – `js/pwa/kalender.js`. Termin-Datei identisch mit `/kalender.ics` des Pi 3.0.2 (geprüft),
       Serientermin für Gaben. Noch auf echten Handys prüfen: iPhone öffnet „Zum Kalender hinzufügen“, Android lädt die Datei.
-- [ ] **CSV-Export** – Pi `app.py` Teil 7 (Zeile ~1897–2100, 3.0.2): stillen, windeln, gewicht, groesse, fieber, symptome,
+- [x] **CSV-Export** (0.9.0) – `js/lokal/api/dateien.js` + `js/lokal/pi/rechnen.js` (WHO aus app.py erzeugt: `werkzeuge/who_uebernehmen.py`). 54 von 54 Dateien byte-gleich mit dem Pi (tests/vergleich_mit_pi.py). Zusätzlich flasche/abpumpen/beikost.csv; alle Tabellen unter Kinder, Backup & Abgleich.
+  Alt: – Pi `app.py` Teil 7 (Zeile ~1897–2100, 3.0.2): stillen, windeln, gewicht, groesse, fieber, symptome,
       medikamente, gaben, impfungen, uheft, Vorlagen. Ziel: `js/lokal/csv/export.js`; Weiche fängt `a[href^="export/"]` ab
       und gibt die Datei über Teilen-Menü/Download aus (UTF-8 mit BOM, `;`, CRLF wie Pi).
 - [ ] **CSV-Import** – Pi `import_auswerten` + `/api/import/<art>` (Zeile ~2100–2355): Vorschau, Doppelte überspringen,

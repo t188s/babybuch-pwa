@@ -70,9 +70,9 @@ export function kindDialog(kind = null, { pflicht = false } = {}) {
           const [erstes] = await alleKinder();
           if (erstes) { await aktivSetzen(erstes.uid); d.close(); ok(erstes); }
         }))));
-      d.append(abschnitt("Erst einmal ausprobieren?", neu("p", "unter", "Ein erfundenes Beispielkind (6 Wochen alt) mit Einträgen in allen Bereichen. Später einfach entfernen."),
-        knopfReihe(knopf("Beispielkind ansehen", async () => {
-          const b = await beispielAnlegen();
+      d.append(abschnitt("Erst einmal ausprobieren?", neu("p", "unter", "Zwei erfundene Kinder: Lea (4 Monate, gestillt) und Ben (8 Tage, Fläschchen) mit Einträgen in allen Bereichen. Später mit einem Knopf entfernen."),
+        knopfReihe(knopf("Demo ansehen", async () => {
+          const b = await demoAnlegen();
           if (b) { d.close(); ok(b); }
         }))));
     }
@@ -80,16 +80,37 @@ export function kindDialog(kind = null, { pflicht = false } = {}) {
   });
 }
 
-/** Beispielkind anlegen und anzeigen (mit kurzer Rückmeldung, dauert ein paar Sekunden). */
-async function beispielAnlegen() {
+// ════════ Demo: zwei erfundene Kinder (Lea 4 Monate, Ben 8 Tage) ════════
+export const demoKinder = async () => (await alleKinder()).filter(k => k.daten.beispiel);
+
+/** Demo anlegen und Lea anzeigen (dauert ein paar Sekunden). Ergebnis: Lea oder null. */
+async function demoAnlegen() {
   try {
-    toast("Beispielkind wird angelegt …");
-    const { beispielkindAnlegen } = await import("./beispiel.js");
-    const kind = await beispielkindAnlegen();
-    await aktivSetzen(kind.uid);
-    try { sessionStorage.setItem("pwaHinweis", "Beispielkind „Lea“ angelegt – entfernen unter Kinder, Backup & Abgleich › Ändern."); } catch (_) { /* egal */ }
-    return kind;
+    if ((await demoKinder()).length) { toast("Die Demo ist schon da – oben über den Namen zwischen Lea und Ben wechseln."); return null; }
+    toast("Demo wird angelegt …", [], 8000);
+    const { demoAnlegen: anlegen } = await import("./beispiel.js");
+    const [lea] = await anlegen();
+    await aktivSetzen(lea.uid);
+    try { sessionStorage.setItem("pwaHinweis", "Demo: Lea (4 Monate) und Ben (8 Tage) – oben über den Namen wechseln. Entfernen: Einstellungen › Demo entfernen."); } catch (_) { /* egal */ }
+    return lea;
   } catch (f) { fehler(f); return null; }
+}
+
+async function demoEntfernen() {
+  const kinder = await demoKinder();
+  if (!kinder.length) return;
+  if (!(await nachfragen(`Demo entfernen (${kinder.map(k => k.daten.name).join(", ")})? Echte Kinder bleiben unberührt.`, "Entfernen"))) return;
+  for (const k of kinder) await kindEntfernen(k.uid);
+  try { sessionStorage.setItem("pwaHinweis", "Demo entfernt."); } catch (_) { /* egal */ }
+  neuStarten();
+}
+
+/** Knopf, der je nach Stand „Demo ansehen“ oder „Demo entfernen“ ist. */
+async function demoKnopfZeichnen(b) {
+  const da = (await demoKinder()).length > 0;
+  b.replaceChildren(da ? "Demo entfernen" : "Demo ansehen · 2 Beispielkinder", neu("span", "pfeil", "›"));
+  b.classList.toggle("loeschen-knopf", false);
+  b.onclick = () => (da ? demoEntfernen() : demoAnlegen().then(l => { if (l) neuStarten(); })).catch(fehler);
 }
 
 // ════════ iPhone/iPad: erst auf den Home-Bildschirm ════════
@@ -169,7 +190,7 @@ async function abschnitte(neuZeichnen) {
     })));
   teile.push(abschnitt("Kinder", ul,
     knopfReihe(knopf("+ Kind hinzufügen", async () => { const k = await kindDialog(); if (k) neuStarten(); }),
-               knopf("+ Beispielkind", async () => { if (await beispielAnlegen()) neuStarten(); })),
+               (() => { const b = knopf("", () => {}); demoKnopfZeichnen(b); return b; })()),
     ...(entfernt.length ? [neu("p", "label", "Entfernt (30 Tage im Papierkorb)"), weg] : [])));
 
   // ── Backup & Abgleich ──
@@ -185,6 +206,18 @@ async function abschnitte(neuZeichnen) {
     zeile("Erinnern", wahl),
     knopfReihe(knopf("Backup teilen", () => backupTeilenDialog(neuZeichnen), "haupt"), knopf("Backup laden", async () => { if (await backupLaden()) neuStarten(); })),
     await letzterImportListe(neuZeichnen)));
+
+  // ── Tabellen (CSV) – wie „Daten & Sicherungen“ der Pi-Version, plus Fläschchen/Abpumpen/Beikost ──
+  const csv = (liste, spalten) => {
+    const box = neu("div", "export-links"); box.style.gridTemplateColumns = `repeat(${spalten}, 1fr)`; box.style.marginTop = "8px";
+    for (const [art, text] of liste) { const a = neu("a", "", text); a.href = `export/${art}.csv`; a.dataset.export = ""; box.append(a); }
+    return box;
+  };
+  teile.push(abschnitt("Tabellen (CSV)",
+    neu("p", "unter", "Alle Einträge des angezeigten Kindes als Tabelle – öffnet in Excel, Numbers oder Google Tabellen. Einlesen: Einstellungen › Tabellen (CSV) exportieren & importieren."),
+    csv([["stillen", "Stillen"], ["windeln", "Windeln"], ["gewicht", "Gewicht"], ["groesse", "Größe"]], 4),
+    csv([["flasche", "Fläschchen"], ["abpumpen", "Abpumpen"], ["beikost", "Beikost"]], 3),
+    csv([["fieber", "Temperatur"], ["symptome", "Symptome"], ["medikamente", "Medikamente"], ["gaben", "Tägliche Gaben"], ["uheft", "U-Heft"], ["impfungen", "Impfungen"]], 2)));
 
   // ── Papierkorb ──
   if (aktiv) {
@@ -374,6 +407,7 @@ export async function einbauen() {
     });
     markieren();
   }
+  if ($("pwa-demo")) demoKnopfZeichnen($("pwa-demo")).catch(() => {});
   for (const id of ["pwa-daten", "pwa-daten-2"]) if ($(id)) $(id).onclick = () => oeffnen().catch(fehler);
   hinweisZeichnen();
 }

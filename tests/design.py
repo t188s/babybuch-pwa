@@ -12,7 +12,7 @@ async def main():
         p.on("pageerror", lambda e: fehler.append(str(e)))
         await p.goto("http://127.0.0.1:8773/"); await p.wait_for_timeout(1000)
         print("Start-Design:", await p.evaluate("document.documentElement.dataset.design"))
-        await p.locator("dialog[open]").get_by_role("button", name="Beispielkind ansehen").click()
+        await p.locator("dialog[open]").get_by_role("button", name="Demo ansehen").click()
         await p.wait_for_function("!document.querySelector('dialog[open]')", timeout=30000)
         await p.reload(); await p.wait_for_timeout(1500)
         for design in ("blau", "gold"):

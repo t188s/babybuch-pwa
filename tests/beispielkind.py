@@ -16,7 +16,7 @@ async def main():
         await p.goto("http://127.0.0.1:8771/"); await p.wait_for_timeout(1000)
         await p.screenshot(path=f"{AUS}/00_willkommen.png", full_page=True)
         import time; t0 = time.time()
-        await p.locator("dialog[open]").get_by_role("button", name="Beispielkind ansehen").click()
+        await p.locator("dialog[open]").get_by_role("button", name="Demo ansehen").click()
         await p.wait_for_function("!document.querySelector('dialog[open]')", timeout=30000)
         print(f"Beispielkind angelegt in {time.time()-t0:.1f} s", flush=True)
         await p.wait_for_timeout(1500)

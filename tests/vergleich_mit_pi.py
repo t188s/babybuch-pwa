@@ -182,6 +182,26 @@ async def main():
                 if (s1, n1) != (s2, n2):
                     abweichungen.append((i, m, pfad, s1, s2, json.dumps(n1, ensure_ascii=False, sort_keys=True)[:600], json.dumps(n2, ensure_ascii=False, sort_keys=True)[:600]))
                 n += 1
+            # ── CSV-Export (Etappe 2): gleiche Daten → gleiche Datei (Text byte-genau, Dateiname gleich) ──
+            csv_n, csv_abw = 0, []
+            for art in ["stillen", "windeln", "gewicht", "groesse", "fieber", "symptome", "medikamente", "gaben", "impfungen", "uheft",
+                        "vorlage/stillen", "vorlage/windeln", "vorlage/gewicht", "vorlage/groesse"]:
+                for q in ["", f"?von={vorgestern}&bis={heute}", f"?von={G}&bis={G}", f"?von={G}T08:10&bis={heute}T23:59", "?von=x&bis=y"]:
+                    if art.startswith("vorlage") and q: continue
+                    try:
+                        with urllib.request.urlopen(f"http://127.0.0.1:8770/export/{art}.csv{q}") as r:
+                            s1, t1 = r.status, r.read().decode("utf-8")
+                            n1 = (r.headers.get("Content-Disposition") or "").split('filename="')[-1].rstrip('"')
+                    except urllib.error.HTTPError as e:
+                        s1, t1, n1 = e.code, json.loads(e.read()).get("fehler"), ""
+                    s2, j2 = await seite.evaluate("""async p => { const r = await fetch('api/export/' + p); return [r.status, await r.json()]; }""", f"{art}.csv{q}")
+                    t2, n2 = (j2.get("text"), j2.get("name")) if s2 == 200 else (j2.get("fehler"), "")
+                    csv_n += 1
+                    if (s1, t1, n1) != (s2, t2, n2):
+                        csv_abw.append((art + q, s1, s2, n1, n2, repr(t1)[:900], repr(t2)[:900]))
+            print(f"CSV: {csv_n} Dateien verglichen, {len(csv_abw)} Abweichungen")
+            for a in csv_abw:
+                print(f"\nCSV {a[0]}: Pi {a[1]} {a[3]} / Web {a[2]} {a[4]}\n  Pi : {a[5]}\n  Web: {a[6]}")
             print(f"{n} Anfragen verglichen, {len(abweichungen)} Abweichungen, Seitenfehler: {fehler}")
             for a in abweichungen:
                 print(f"\n#{a[0]} {a[1]} {a[2]}: Pi {a[3]} / Web {a[4]}\n  Pi : {a[5]}\n  Web: {a[6]}")

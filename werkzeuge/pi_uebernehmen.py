@@ -109,7 +109,8 @@ def uebernehmen(index, pi_version, web_version):
                  '<button type="button" id="pwa-daten-2">Kinder, Backup &amp; Abgleich <span class="pfeil">›</span></button>')
     # 6) Pi-Sicherungskopien → Backup der Web-App
     s = ersetzen(s, '<button type="button" id="sicherung-oeffnen">Daten &amp; Sicherungen herunterladen <span class="pfeil">›</span></button>',
-                 '<button type="button" id="pwa-daten">Kinder, Backup &amp; Abgleich <span class="pfeil">›</span></button>')
+                 '<button type="button" id="pwa-daten">Kinder, Backup &amp; Abgleich <span class="pfeil">›</span></button>\n'
+                 '      <button type="button" id="pwa-demo">Demo ansehen · 2 Beispielkinder <span class="pfeil">›</span></button>')
     s = ersetzen(s, '$("sicherung-oeffnen").onclick = sicherungenOeffnen;', "/* Web-App: Sicherungen → Backup (js/pwa/kinder-backup.js) */")
     # 7) Erinnerungen über die Home-Assistant-App gibt es nicht
     s = ersetzen(s, '<p class="unter">Für tägliche Gaben (z. B. Vitamin D): Mitteilung über die Home-Assistant-App an diese iPhones.</p>\n    <div id="ei-geraete"></div>',

@@ -12,7 +12,7 @@ async def main():
         p.on("pageerror", lambda e: fehler.append(str(e)))
         p.on("console", lambda m: fehler.append(m.text) if m.type == "error" else None)
         await p.goto("http://127.0.0.1:8775/"); await p.wait_for_timeout(1200)
-        await p.locator("dialog[open]").last.get_by_role("button", name="Beispielkind ansehen").click()
+        await p.locator("dialog[open]").last.get_by_role("button", name="Demo ansehen").click()
         await p.wait_for_function("!document.querySelector('dialog[open]')", timeout=30000)
         await p.reload(); await p.wait_for_timeout(1800)
         wahl = await p.evaluate("[...document.querySelectorAll('#pwa-ern-wahl button')].map(b => b.innerText + (b.classList.contains('aktiv') ? '*' : ''))")
