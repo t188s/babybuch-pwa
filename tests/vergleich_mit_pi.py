@@ -11,6 +11,23 @@ vorgestern = (datetime.date.today() - datetime.timedelta(days=2)).isoformat()
 heute = datetime.date.today().isoformat()
 G = gestern
 
+IMPORT_STILLEN = ("\ufeffDatum;Beginn;Dauer (Min);Seite;Zuletzt an;Notiz\r\n"
+    "20.11.2026;08:00;20;Links;;gut angelegt\r\n"
+    "20.11.2026;08:00;20;Links;;doppelt in der Datei\r\n"
+    "1.2.26;9.05;12,6;Beide, zuletzt rechts;;\r\n"
+    "20.11.2026 14:30;;15;R;;\"Notiz mit ; und\nZeilenumbruch\"\r\n"
+    "2026-11-21;2026-11-21T06:10;25 Min;beide;links;'=SUMME(A1)\r\n"
+    "31.02.2026;10:00;10;Links;;\r\n"
+    "21.11.2026;25:00;10;Links;;\r\n"
+    "21.11.2026;11:00;0;Links;;\r\n"
+    "21.11.2026;12:00;10;Mitte;;\r\n"
+    ";;;;;\r\n"
+    "21.11.2026;13:00;181;L;;\r\n")
+IMPORT_WINDELN = ("Datum,Uhrzeit,Art,Stuhlfarbe\n20.11.2026,09:00,Pipi,\n20.11.2026,10:00,Stuhl,grün\n"
+    "20.11.2026,11:00,\"nass, voll\",gelb\n20.11.2026,12:00,trocken,\n21.11.26,7.30 Uhr,V,Schwarz-grün (Mekonium)\n")
+IMPORT_GEWICHT = "Datum\tGewicht (kg)\n20.11.2026\t3,79\n21.11.2026\t3.790\n22.11.2026\tabc\n23.11.2026\t3850 g\n"
+IMPORT_GROESSE = "Datum;Größe in cm\n20.11.2026;52,5\n21.11.2026;0,53 m\n22.11.2026;200\n"
+
 # (Methode, Pfad, Daten, Name für die id der Antwort)
 AUFRUFE = [
     ("PUT", "einstellungen", {"name": "Mila", "geburtsdatum": "2026-10-05", "geschlecht": "w", "geburtsgewicht": "3,35", "nacht_von": 21}, None),
@@ -95,6 +112,22 @@ AUFRUFE = [
     ("PUT", "einstellungen", {"nacht_bis": 24}, None),
     ("PUT", "einstellungen", {"geschlecht": "x"}, None),
     ("GET", "einstellungen", None, None),
+    # ── CSV-Import (Etappe 2): knifflige Dateien wie aus Excel/Numbers/älteren Versionen ──
+    ("POST", "import/stillen", {"text": IMPORT_STILLEN}, None),
+    ("POST", "import/stillen", {"text": IMPORT_STILLEN, "bestaetigen": True}, None),
+    ("POST", "import/stillen", {"text": IMPORT_STILLEN}, None),
+    ("GET", "stillen?von=2026-01-01&bis=2026-12-31", None, None),
+    ("POST", "import/windeln", {"text": IMPORT_STILLEN}, None),
+    ("POST", "import/windeln", {"text": IMPORT_WINDELN}, None),
+    ("POST", "import/windeln", {"text": IMPORT_WINDELN, "bestaetigen": True}, None),
+    ("GET", "windeln?von=2026-01-01&bis=2026-12-31", None, None),
+    ("POST", "import/gewicht", {"text": IMPORT_GEWICHT, "bestaetigen": True}, None),
+    ("POST", "import/groesse", {"text": IMPORT_GROESSE, "bestaetigen": True}, None),
+    ("GET", "gewicht", None, None),
+    ("GET", "groesse", None, None),
+    ("POST", "import/groesse", {"text": "   \n\n"}, None),
+    ("POST", "import/groesse", {"text": ";;;\n"}, None),
+    ("POST", "import/quatsch", {"text": "a"}, None),
     ("POST", "nutzung", {"ereignisse": [{"v": "t", "g": "abc", "tag": heute, "typ": "tipp", "ziel": "#x"}]}, None),
     ("GET", "nutzung/versionen", None, None),
     ("DELETE", "nutzung?version=t", None, None),

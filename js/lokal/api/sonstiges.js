@@ -44,7 +44,6 @@ export function routen(r) {
   r.get("erinnerung/geraete", () => ({ verfuegbar: false, geraete: [] }));
   // Abgelegte Berichte und CSV-Import kommen mit Etappe 2
   r.get("berichte", () => ({ berichte: [] }));
-  r.post("import/:art", () => { throw new ApiFehler("Der CSV-Import kommt mit dem nächsten Update der Web-App."); });
   // Pi-Sicherungskopien ersetzt das Backup (Einstellungen › Kinder, Backup & Abgleich)
   r.get("sicherungen", () => ({ sicherungen: [], ordner: "" }));
 }

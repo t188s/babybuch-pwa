@@ -1239,7 +1239,7 @@
     </div>
 
     <div class="karte mehr">
-      <button type="button" id="einstellungen-knopf">Einstellungen &amp; Export <span class="pfeil">Version Web 0.9.0 · Pi 3.0.2 ›</span></button>
+      <button type="button" id="einstellungen-knopf">Einstellungen &amp; Export <span class="pfeil">Version Web 0.9.1 · Pi 3.0.2 ›</span></button>
       <button type="button" id="pwa-daten-2">Kinder, Backup &amp; Abgleich <span class="pfeil">›</span></button>
     </div>
     <button type="button" class="g-bericht-knopf" id="a-bericht" hidden>Bericht erstellen · Hebamme oder Kinderärztin <span>›</span></button>
@@ -1519,7 +1519,7 @@
   <div class="dialog-knoepfe" style="grid-template-columns:1fr;margin-top:18px">
     <button id="einstellungen-fertig" class="haupt">Fertig</button>
   </div>
-  <p class="unter" style="text-align:center;margin:12px 0 0">Babybuch · Version Web 0.9.0 · Pi 3.0.2</p>
+  <p class="unter" style="text-align:center;margin:12px 0 0">Babybuch · Version Web 0.9.1 · Pi 3.0.2</p>
 </dialog>
 
 <!-- "Beide": an welcher Seite zuletzt? -->
@@ -1951,7 +1951,7 @@
   // ════════════════════════════════════════════════════════
   const NUTZUNG = (() => {
     const ZUSTAND = ["aktiv", "fertig", "faellig", "an", "gefuellt", "laeuft", "heute", "ueber", "sichtbar", "zu"];
-    const VERSION = "web-0.9.0", SICHER = ["a", "t", "teil", "ansicht", "w", "sym", "seite", "art", "bereich", "h", "gesamt", "d"];
+    const VERSION = "web-0.9.1", SICHER = ["a", "t", "teil", "ansicht", "w", "sym", "seite", "art", "bereich", "h", "gesamt", "d"];
     const lies = (k, d) => { try { return localStorage.getItem(k) ?? d; } catch (_) { return d; } };
     const schreib = (k, v) => { try { localStorage.setItem(k, v); } catch (_) { /* egal */ } };
     let geraet = lies("nutzungGeraet", null);

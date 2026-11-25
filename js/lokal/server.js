@@ -16,6 +16,7 @@ import * as einstellungen from "./api/einstellungen.js";
 import * as sonstiges from "./api/sonstiges.js";
 import * as ernaehrung from "./api/ernaehrung.js";
 import * as dateien from "./api/dateien.js";
+import * as einlesen from "./api/einlesen.js";
 
 const ROUTEN = [];
 function route(methode, muster, handler) {
@@ -26,7 +27,7 @@ const r = {
   get: (m, h) => route("GET", m, h), post: (m, h) => route("POST", m, h), put: (m, h) => route("PUT", m, h),
   patch: (m, h) => route("PATCH", m, h), delete: (m, h) => route("DELETE", m, h),
 };
-for (const modul of [stillen, wachstum, gesundheit, heft, einstellungen, ernaehrung, dateien, sonstiges]) modul.routen(r);
+for (const modul of [stillen, wachstum, gesundheit, heft, einstellungen, ernaehrung, dateien, einlesen, sonstiges]) modul.routen(r);
 
 function finden(methode, pfad) {
   const teile = pfad.split("/");

@@ -17,7 +17,8 @@ Entscheidungen 23.11.2026:
   Alt: – Pi `app.py` Teil 7 (Zeile ~1897–2100, 3.0.2): stillen, windeln, gewicht, groesse, fieber, symptome,
       medikamente, gaben, impfungen, uheft, Vorlagen. Ziel: `js/lokal/csv/export.js`; Weiche fängt `a[href^="export/"]` ab
       und gibt die Datei über Teilen-Menü/Download aus (UTF-8 mit BOM, `;`, CRLF wie Pi).
-- [ ] **CSV-Import** – Pi `import_auswerten` + `/api/import/<art>` (Zeile ~2100–2355): Vorschau, Doppelte überspringen,
+- [x] **CSV-Import** (0.9.1) – `js/lokal/api/einlesen.js`. 15 Import-Anfragen mit kniffligen Dateien (Excel-Datum+Zeit in einer Spalte, Komma/Tab/Semikolon, Anführungszeichen mit Zeilenumbruch, falsche Dateiart, Doppelte) gleich wie Pi; Rundreise Export→Import geprüft.
+  Alt: – Pi `import_auswerten` + `/api/import/<art>` (Zeile ~2100–2355): Vorschau, Doppelte überspringen,
       alte Formate (0.3–1.x), Excel/Numbers-tolerant. Ziel: `js/lokal/csv/import.js`, Route `import/:art` ersetzt den Platzhalter
       in `js/lokal/api/sonstiges.js`. Testdatei-Regeln aus der Pi-Wunschliste (8 Zeilen mit allen Fallstricken) übernehmen.
 - [ ] **Bericht** – Pi `app.py` Teil 8 (Zeile ~2356–3010) + `templates/bericht.html` (Jinja, 453 Zeilen):
